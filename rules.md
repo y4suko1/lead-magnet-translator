@@ -123,16 +123,18 @@ If this check finds a problem, fix it before showing the reader anything. Don't 
 Section 7's self-check is you, the model, re-reading your own work. It's real, but it's not the same as an independent script actually running against the files. If this session has code execution enabled, run the stronger version instead of relying on section 7 alone:
 
 1. Before delivering anything, write `sources-[YYYY-MM-DD].txt`, the transcript, and the notes file (if one was given) to your working directory.
-2. Run `verify/check.py sources-[YYYY-MM-DD].txt <transcript-file> [notes-file]` from the connected `lead-magnet-translator` repository (clone it first if it isn't already available in this session).
+2. Run `verify/check.py sources-[YYYY-MM-DD].txt <transcript-file> [notes-file]` from the connected `lead-magnet-translator` repository, cloned fresh into this session's working directory (`git clone https://github.com/y4suko1/lead-magnet-translator`).
 3. Fix or remove any idea whose block fails. Re-run until every block passes, or the idea is dropped from the menu.
 4. State the real result in the sources file's header line (see section 6): the exact MATRIX line `check.py` printed, and the pass/fail count, not a paraphrase and not an assumption that it would have passed.
 
-**If code execution is available but the checker run fails to complete** (the script errors, the repository isn't reachable, or similar), do not silently fall back to section 7 alone without saying so. Ask the reader directly which they'd prefer:
+**`check.py` must be the actual file from the cloned repository, never rewritten from memory, from a description of it, or from a copy in project knowledge.** A reconstructed script is not the checker; it's a guess at the checker, and a guess can pass things the real script would catch, or fail things it wouldn't. If the repository can't be cloned, there is no checker to run this session, full stop, not a substitute for one.
 
-- **Proceed with section 7's self-check only**, and say so plainly in the sources file's header line: the checker didn't run, and why.
-- **Retry** the checker run before delivering anything.
+**If code execution is available but the clone or the checker run fails to complete** (the script errors, the repository isn't reachable, or similar), do not silently fall back to section 7 alone, and do not silently substitute a reconstructed script, without saying so. Stop and ask the reader directly which they'd prefer:
 
-Never claim in the header that `check.py` ran, or state one of its results, when it didn't actually run in this session. State a real, compute-verified result exactly as it happened, never one this chat assumed or invented.
+- **Proceed with section 7's self-check only**, and say so plainly in the sources file's header line: the checker didn't run, and why (e.g. "the repository could not be cloned this session").
+- **Retry** the clone and checker run before delivering anything.
+
+Do not choose between these on the reader's behalf. Never claim in the header that `check.py` ran, or state one of its results, when it didn't actually run in this session against the real file. State a real, compute-verified result exactly as it happened, never one this chat assumed, invented, or produced from a reconstruction.
 
 ## 8. Output format
 
