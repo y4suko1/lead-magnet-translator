@@ -1,0 +1,43 @@
+# Double-checking an ideas menu yourself
+
+This is entirely optional. You never need it to get an ideas menu out of the tool. It exists only for anyone who wants to check, without taking the AI's word for it, that every quote in a `sources-[date].txt` file really does appear in the transcript it claims to come from.
+
+You don't need to know how to code to use it.
+
+## What you need
+
+Python installed on your computer (a one-time setup, free, from [python.org](https://python.org); search "how to install Python on Windows" if you've not done it before).
+
+You also need this `verify/` folder from the lead-magnet-translator repository. The easiest way is to download the whole repository as a ZIP (green **Code** button on GitHub, then **Download ZIP**) and unzip it.
+
+## How to run it
+
+1. Open `check.bat` in this folder.
+2. **Drag the files onto it at once**: the `sources-[date].txt` file (not the ideas menu itself), and the transcript it was generated from. If the ideas menu used call notes and the sources file has any `NOTES:` lines, drag the notes file too, it's optional. (Select the files in your file explorer, click one, then Ctrl+click the others, then drag them together onto `check.bat`.)
+3. If you double-click without dragging anything, it'll ask you to type or paste each file path instead, and let you skip the notes file if you don't have one.
+4. It prints `PASS` or `FAIL` for each quoted line it checks. If something fails, it shows you exactly what it searched for, so you can judge for yourself. Any `NOTES:` line checked without a notes file given shows `SKIP` instead, not a failure.
+5. Press any key to close the window when you're done.
+
+## What this is, and isn't
+
+This is a way to independently confirm a quote is real, separate from the tool's own built-in self-check (described in `rules.md` and the main [README.md](../README.md)). It's not part of getting a menu from the tool normally; most people will never need to open this folder. It checks the sources file, never the ideas menu itself, since the menu is deliberately kept free of anything that looks like a citation (see `rules.md` section 5).
+
+**It checks that quotes are real. It doesn't check whether an idea is any good.** Whether an idea is fun and engaging, not just accurate, is a judgement call this script can't make, see `reference/output-schema.md` for what that check looks like instead.
+
+Two ready-made examples are in `test-cases/`: `correct-sources.txt` (should print PASS, or SKIP if you leave out the notes file, for everything) and `broken-sources.txt` (deliberately wrong, with several invented or mismatched claims; should print FAIL on most lines, and show you exactly what a caught mistake looks like). Both check against `../sample/transcript.txt`, and `correct-sources.txt` also has a couple of `NOTES:` lines you can check against `../sample/notes.txt`.
+
+Try it yourself:
+```
+python check.py test-cases/correct-sources.txt ../sample/transcript.txt ../sample/notes.txt
+python check.py test-cases/broken-sources.txt ../sample/transcript.txt
+```
+
+## If you're comfortable with a terminal
+
+`check.bat` is just a wrapper. The underlying script is `check.py`, and it runs the same way directly:
+
+```
+python check.py <sources-file> <transcript-file> [notes-file]
+```
+
+The notes file is optional, and only needed if the sources file has `NOTES:` lines you want checked. Same output either way, same exit code (0 if every line passes, 1 if any fail). Use whichever interface you prefer.

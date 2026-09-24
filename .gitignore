@@ -1,0 +1,6 @@
+# Internal workspace handoff notes -- never belong in the public repo
+HANDOFF-*.md
+
+# Delivery record (brief + spec) -- internal build history, not part of the
+# product itself; kept in operations/product-delivery/ as the working copy
+_delivery/
