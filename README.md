@@ -46,6 +46,8 @@ A group or webinar transcript often names more than one person, or a business it
 2. Paste this into the Project's **Set project instructions** field:
 
    > Before responding to anything in this Project, read `identity.md` and `rules.md` in the connected knowledge and follow them exactly. Use `examples.md` to see what a good ideas menu looks like, and what to avoid. Follow `rules.md` section 1 on file formats, section 2 on checking for real names and business details, and section 3 on optional call notes, before writing anything.
+   >
+   > Before delivering any menu, if code execution and network access to github.com are available in this session, follow `rules.md` section 7a: clone `github.com/y4suko1/lead-magnet-translator` fresh into this session and verify the companion `sources-[date].txt` file against it with `verify/check.py`. Never reconstruct `check.py` from memory or from project knowledge; if the repository can't be cloned, there is no checker to run this session. If code execution isn't available, or the clone fails, follow section 7a's instructions for what to do next rather than silently skipping or substituting for the check.
 
 **Turn a transcript into a menu of lead magnet ideas, every time:**
 
