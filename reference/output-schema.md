@@ -22,7 +22,11 @@ Titles and the seven part-labels are bolded, and a divider separates each idea f
 
 ## The sources file
 
-Named `sources-[YYYY-MM-DD].txt`, delivered alongside the menu, never merged into it. This is where an idea's *full* grounding lives, every claim and quote, not just the one or two headline quotes already shown in the menu's own Source part. One or more blocks per idea, one block per distinct claim:
+Named `sources-[YYYY-MM-DD].txt`, delivered alongside the menu, never merged into it. This is where an idea's *full* grounding lives, every claim and quote, not just the one or two headline quotes already shown in the menu's own Source part.
+
+The file opens with one header line stating honestly whether the checker actually ran this session: either that it wasn't run (the normal case in a chat with no code execution), or the real result if it genuinely did run before delivery. See `rules.md` sections 6 and 7a for exactly what this line says in each case. A real result, stated as what it is, never assumed or invented.
+
+After the header, one or more blocks per idea, one block per distinct claim:
 
 ```
 IDEA: [the idea's Title, exactly as it appears in the menu]

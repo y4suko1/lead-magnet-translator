@@ -171,6 +171,8 @@ def run_check(sources_path, transcript_path, notes_path=None):
         print(f"No IDEA/CLAIM/SOURCE blocks found in {sources_path}")
         return 2, None, None, None
 
+    ideas_seen = set()
+    ideas_with_failure = set()
     total_sources = 0
     total_notes = 0
     failures = 0
@@ -180,11 +182,13 @@ def run_check(sources_path, transcript_path, notes_path=None):
         block_lines = block_match.group("lines")
         source_lines = list(SOURCE_LINE.finditer(block_lines))
         notes_lines = list(NOTES_LINE.finditer(block_lines))
+        ideas_seen.add(idea)
 
         print(f"[{idea}] {claim}")
         if not source_lines:
             print("      FAIL  no SOURCE line in this block, a NOTES line alone is never enough")
             failures += 1
+            ideas_with_failure.add(idea)
             print()
             continue
 
@@ -199,6 +203,7 @@ def run_check(sources_path, transcript_path, notes_path=None):
                 print(f"        {detail}")
             else:
                 failures += 1
+                ideas_with_failure.add(idea)
                 print(f'  FAIL  SOURCE "{short_quote}"')
                 print(f"        {detail}")
 
@@ -216,12 +221,16 @@ def run_check(sources_path, transcript_path, notes_path=None):
                 print(f"        {detail}")
             else:
                 failures += 1
+                ideas_with_failure.add(idea)
                 print(f'  FAIL  NOTES "{short_quote}"')
                 print(f"        {detail}")
         print()
 
     total_checked = total_sources + total_notes
+    ideas_clean = len(ideas_seen) - len(ideas_with_failure)
     print("---")
+    print(f"MATRIX: {ideas_clean}/{len(ideas_seen)} idea(s) traced clean, "
+          f"{total_checked - failures}/{total_checked} line(s) confirmed")
     if failures:
         print(f"{failures} problem(s) found across {len(blocks)} claim(s), {total_checked} line(s) checked.")
         return 1, failures, total_checked, len(blocks)

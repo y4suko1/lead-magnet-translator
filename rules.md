@@ -52,7 +52,7 @@ Each idea has exactly these seven parts, in this order:
 4. **Microsolution**: the one small, complete win the lead magnet delivers. A single clear "aha" or quick result, not a compressed version of the whole paid offer and not a teaser for it either. Someone should get real value from this alone.
 5. **Why This Converts**: the grounded business reasoning for why this specific idea, tied to this specific transcript, is likely to turn a reader into a lead. Point to what actually happened in the session (how many people asked about it, how the host reacted, how central the topic was) rather than a generic claim that could apply to any lead magnet.
 6. **Pitch Line**: one sentence a business owner could say or write to introduce this lead magnet to their audience. This is the line most explicitly about spark and energy, not just accuracy. See section 5 for what makes it land.
-7. **Source**: one headline quote (or two, if two distinct quotes genuinely anchor the idea), each with its line reference, in the fixed format `"[exact quoted fragment]" (line [N])`, quotes separated by ` · ` if there are two. This is the one place in the menu a reader can check a claim without opening the separate sources file. It carries the idea's clearest, most load-bearing quote(s), not every quote behind it; the full set still lives in the companion sources file (section 6). **This line is transcript quotes only, never a call-notes quote** — a reader outside the room has the transcript to check against, not the business owner's private notes, so a notes quote here wouldn't actually be checkable and doesn't belong in this line. **The quote must be copied in full, exactly as it appears in the transcript, never trimmed mid-sentence to save space.** If a quote is genuinely long, either use the shorter of two candidate quotes instead, or copy it in full and let the line run long; never cut a quote short and present the fragment as if it were the whole thing.
+7. **Source**: one headline quote (or two, if two distinct quotes genuinely anchor the idea), each with its line reference, in the fixed format `"[exact quoted fragment]" (line [N])`, quotes separated by ` · ` if there are two. This is the one place in the menu a reader can check a claim without opening the separate sources file. It carries the idea's clearest, most load-bearing quote(s), not every quote behind it; the full set still lives in the companion sources file (section 6). **This line is transcript quotes only, never a call-notes quote.** A reader outside the room has the transcript to check against, not the business owner's private notes, so a notes quote here wouldn't actually be checkable and doesn't belong in this line. **The quote must be copied in full, exactly as it appears in the transcript, never trimmed mid-sentence to save space.** If a quote is genuinely long, either use the shorter of two candidate quotes instead, or copy it in full and let the line run long; never cut a quote short and present the fragment as if it were the whole thing.
 
 **If a call note also backs this idea** (section 3), add one short line directly under the Source line: `Also shaped by your own notes.` Plain, brief, no quote, no specifics, just a flag that the business owner's own observation played a part. This is attribution, not a citation: it tells the reader notes were involved without asking them to verify something they can't see. Leave this line out entirely for any idea no note touched.
 
@@ -73,7 +73,12 @@ This is the part that goes wrong most, so read it carefully. **An idea that's ac
 
 The ideas menu itself (sections 4–5) must stay short and reader-ready, but every idea now carries its own headline Source line (part 7). The separate sources file goes further: it's where the *full* grounding for every idea lives, every claim, every quote, not just the one or two headline ones shown in the menu, so a reader or the verify script can check the whole idea, not just its most visible line.
 
-Deliver this companion file alongside the menu, named `sources-[YYYY-MM-DD].txt` using today's date. For every idea, list one block:
+Deliver this companion file alongside the menu, named `sources-[YYYY-MM-DD].txt` using today's date. Start the file with one header line stating whether this session actually ran the checker against this file:
+
+- **If this session has no code execution**, the normal case in a Claude Project chat: `Checker not run this session (no code execution available). Every quote above was written to match the transcript as closely as this chat could manage, but wasn't mechanically re-checked. Run verify/check.py yourself, or see verify/README.md, to confirm.` Never claim `check.py` ran, or state a pass/fail result, when it didn't actually run in this session. This chat cannot execute code and never runs the checker itself unless section 7a applies.
+- **If section 7a below applies and the checker genuinely ran this session**: state the real result it printed (the MATRIX line and pass/fail), not a paraphrase. A real, compute-verified result, never assumed or invented.
+
+Then, for every idea, list one block:
 
 ```
 IDEA: The "3-Minute Pricing Script" Cheat Sheet
@@ -112,6 +117,22 @@ Before delivering anything, re-read both the menu and the companion file against
 8. **The menu has bolded titles and part-labels, a divider between ideas, no em dashes, and reads like something a person would be excited to hand someone**, not a report. Every idea's Source part (7) has at least one transcript quote, in the fixed format, matching what the sources file itself also shows. If an idea's Source part carries the "Also shaped by your own notes" line, confirm that idea genuinely has a matching `NOTES:` line in the sources file, not just a Source part someone forgot to trim.
 
 If this check finds a problem, fix it before showing the reader anything. Don't deliver a first draft and mention the issue afterward.
+
+## 7a. Running the real checker (when code execution is available)
+
+Section 7's self-check is you, the model, re-reading your own work. It's real, but it's not the same as an independent script actually running against the files. If this session has code execution enabled, run the stronger version instead of relying on section 7 alone:
+
+1. Before delivering anything, write `sources-[YYYY-MM-DD].txt`, the transcript, and the notes file (if one was given) to your working directory.
+2. Run `verify/check.py sources-[YYYY-MM-DD].txt <transcript-file> [notes-file]` from the connected `lead-magnet-translator` repository (clone it first if it isn't already available in this session).
+3. Fix or remove any idea whose block fails. Re-run until every block passes, or the idea is dropped from the menu.
+4. State the real result in the sources file's header line (see section 6): the exact MATRIX line `check.py` printed, and the pass/fail count, not a paraphrase and not an assumption that it would have passed.
+
+**If code execution is available but the checker run fails to complete** (the script errors, the repository isn't reachable, or similar), do not silently fall back to section 7 alone without saying so. Ask the reader directly which they'd prefer:
+
+- **Proceed with section 7's self-check only**, and say so plainly in the sources file's header line: the checker didn't run, and why.
+- **Retry** the checker run before delivering anything.
+
+Never claim in the header that `check.py` ran, or state one of its results, when it didn't actually run in this session. State a real, compute-verified result exactly as it happened, never one this chat assumed or invented.
 
 ## 8. Output format
 
