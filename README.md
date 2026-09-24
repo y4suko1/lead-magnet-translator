@@ -6,20 +6,9 @@ Every idea in the menu traces to something specific in the transcript. If the tr
 
 ## Where this fits in a real process
 
-Turning a session recording into a lead magnet, end to end, usually looks something like this by hand:
+Turning a session into a lead magnet by hand means reviewing notes, reading the transcript, anonymising it, generating ideas, reconciling them with what you noticed live, then picking one to actually build before creating it, its emails, and its funnel.
 
-1. Review any notes taken during the call.
-2. Read the transcript and compare it against those notes, adding more.
-3. Anonymise the transcript.
-4. Get an AI to review the transcript for lead-magnet-worthy ideas.
-5. Reconcile the AI's ideas with what came out of steps 1 to 3.
-6. Decide on one idea, weighing value, time to build, how simple the funnel is, and whether the next steps are actually ready to go.
-7. Create the lead magnet and its landing page.
-8. Create the thank-you and nurture emails.
-9. Set up the automation for the funnel.
-10. Promote it.
-
-**This tool covers steps 1 to 5, not just step 4.** You still anonymise the transcript yourself (step 3), but you can hand this tool your own call notes alongside it, optional, and it uses them to shape which ideas surface, effectively doing step 5's reconciliation as it generates the menu, not leaving you to do that matching up afterward. **It stops short of step 6.** Picking one idea to actually build means weighing funnel simplicity and whether the next steps are ready, judgement calls that stay yours to make.
+**This tool covers everything up to and including reconciling your notes with the transcript.** You anonymise the transcript yourself; hand this tool your own call notes alongside it (optional) and it folds them into the menu as it goes, rather than leaving you to match them up afterward. **It stops before you pick which idea to build.** That's a judgement call about funnel simplicity and readiness, and it stays yours.
 
 ## Before you use this
 
@@ -63,20 +52,16 @@ A group or webinar transcript often names more than one person, or a business it
 
 If the transcript is thin and can only genuinely support one or two strong ideas, that's what you'll get. A short, real menu beats a full one padded with a weak idea.
 
-**A separate sources file**, named `sources-[date].txt`. This is what proves the ideas menu isn't just taking the AI's word for it. For every idea, it shows the exact words from the transcript, and from your notes if you gave any, that idea is based on. You never need to open this file to use the menu; it's there for anyone who wants to check.
-
-The full contract this output follows, the exact seven parts per idea, and how the sources file is formatted, is written down in [reference/output-schema.md](reference/output-schema.md), so you can check it against any output without needing to ask.
+**A separate sources file**, named `sources-[date].txt`, proves the menu isn't just taking the AI's word for it: the exact transcript (and notes) words behind every idea, so anyone can check without opening a second file. Full output contract in [reference/output-schema.md](reference/output-schema.md).
 
 ## How to check an idea yourself
 
-Open the sources file, pick an idea, and find its quoted line. Open the transcript and check the words are really there. That's it, no tool needed.
-
-If you'd rather have something do that checking for you, there's an optional tool for it in [verify/](verify/README.md). You never need it to use the translator normally; it's there only if you want to double-check one yourself, and it doesn't need any coding knowledge to run. It checks that quotes are real, it can't tell you whether an idea is any good, that's a judgement call for you.
+Open the sources file, find the quoted line, check it's really in the transcript. No tool needed. An optional script that does this for you lives in [verify/](verify/README.md); it confirms quotes are real, not whether an idea is any good.
 
 ## Try it on the example
 
-[sample/transcript.txt](sample/transcript.txt) is a made-up transcript (a fictional business, "Coach A," running a fictional group masterclass, no real person, no real session content). [sample/notes.txt](sample/notes.txt) is a made-up set of call notes for the same session, showing what the optional notes input looks like. [sample/expected-output-menu.txt](sample/expected-output-menu.txt) is the correct ideas menu for the transcript and notes together, and [sample/expected-output-sources.txt](sample/expected-output-sources.txt) is its matching sources file, so you can see exactly what a finished result should look like before trying your own transcript.
+[sample/](sample/) has a made-up transcript and notes (a fictional "Coach A" masterclass, no real content) plus the expected menu and sources output, so you can see a finished result before trying your own.
 
 ## What this is not
 
-Not a replacement for anonymising your own transcript, that stays your decision and your step. It stops at the idea stage, it doesn't draft the actual lead magnet, write the landing page, or build the funnel around it, those stay yours to do once you've picked an idea. It also doesn't make the final call on which idea to build, that's a judgement about funnel simplicity and readiness only you can make.
+Not a replacement for anonymising your own transcript, that stays yours to do. It stops at the idea stage: it doesn't draft the lead magnet, its landing page, or its funnel, and it doesn't pick which idea to build. Those decisions stay yours.
