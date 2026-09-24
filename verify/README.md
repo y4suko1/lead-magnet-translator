@@ -20,7 +20,7 @@ You also need this `verify/` folder from the lead-magnet-translator repository. 
 
 ## What this is, and isn't
 
-This is a way to independently confirm a quote is real, separate from the tool's own built-in self-check (described in `rules.md` and the main [README.md](../README.md)). It's not part of getting a menu from the tool normally; most people will never need to open this folder. It checks the sources file, never the ideas menu itself, since the menu is deliberately kept free of anything that looks like a citation (see `rules.md` section 5).
+This is a way to independently confirm a quote is real, separate from the tool's own built-in self-check (described in `rules.md` and the main [README.md](../README.md)). It's not part of getting a menu from the tool normally; most people will never need to open this folder. It checks the sources file, not the ideas menu itself, because the sources file holds an idea's *full* grounding, every claim and quote, not just the one or two headline quotes the menu's own Source line already shows (see `rules.md` section 4, part 7, and section 6).
 
 **It checks that quotes are real. It doesn't check whether an idea is any good.** Whether an idea is fun and engaging, not just accurate, is a judgement call this script can't make, see `reference/output-schema.md` for what that check looks like instead.
 
@@ -41,3 +41,15 @@ python check.py <sources-file> <transcript-file> [notes-file]
 ```
 
 The notes file is optional, and only needed if the sources file has `NOTES:` lines you want checked. Same output either way, same exit code (0 if every line passes, 1 if any fail). Use whichever interface you prefer.
+
+## Checking that the checker itself works
+
+You don't have to take this script's own correctness on faith either. Run:
+
+```
+python check.py --selftest
+```
+
+This runs the checker against its own two shipped fixtures in one go: the known-good sample (`test-cases/correct-sources.txt`, which must pass in full) and the deliberately broken one (`test-cases/broken-sources.txt`, where every single quote is either invented outright or subtly altered from the real transcript line, and every one must fail). It prints a clear PASS or FAIL for each fixture and an overall result, exit code 0 only if both behave exactly as expected.
+
+This proves the checker's basic logic holds, not that it catches every conceivable way a quote could be wrong, only the two shapes of wrong its own fixture demonstrates. See the note in `check.py`'s own docstring ("What --selftest actually proves") for the honest limits of what a pass here means.

@@ -8,17 +8,28 @@ reader can verify, by running actual code rather than trusting the AI's own
 self-check, that every quoted fragment in a companion sources file genuinely
 appears in the transcript (or notes) it claims to come from.
 
-The reader-facing ideas menu itself carries no citations (see rules.md
-section 5 for why) -- provenance lives entirely in a separate companion
-file, named sources-[YYYY-MM-DD].txt, delivered alongside the menu. That
-companion file is what this script checks.
+The reader-facing ideas menu itself carries one headline transcript quote
+per idea (see rules.md section 4, part 7), but the full grounding, every
+claim and quote behind each idea, lives in a separate companion file, named
+sources-[YYYY-MM-DD].txt, delivered alongside the menu. That companion file
+is what this script checks.
 
 Usage:
     python check.py <sources-file.txt> <transcript-file.txt> [notes-file.txt]
+    python check.py --selftest
 
 The notes file is optional, and only needed if the sources file contains any
 NOTES lines (see below). Without it, NOTES lines are skipped with a warning
 rather than checked.
+
+--selftest runs this script against its own two shipped fixtures instead of
+checking real output: the known-good sources file (test-cases/correct-
+sources.txt, which must pass in full) and the known-broken one (test-cases/
+broken-sources.txt, which must fail on every single line). It exists so a
+reader doesn't have to take this script's correctness on faith either --
+the same discipline this whole tool asks of the AI's output applies to the
+checker meant to verify it. See the "What --selftest actually proves"
+section below for what a pass here does and doesn't establish.
 
 A sources file contains one or more blocks in this form:
 
@@ -59,6 +70,15 @@ For each SOURCE or NOTES line, the script checks:
 On any failure it prints the claim, what was searched for, and where (if
 anywhere) it was actually found, then exits non-zero. It never modifies any
 input file.
+
+What --selftest actually proves: that this script correctly passes a menu
+built the way rules.md describes, and correctly fails one where every single
+quote is either invented outright or subtly altered from the real transcript
+line. It is not a guarantee this script catches every possible way a quote
+could be wrong, only that it catches the two shapes of wrong its own shipped
+fixture demonstrates. Treat a --selftest pass as "the checker's basic logic
+works," not "every future sources file this checker approves is trustworthy
+by that fact alone."
 """
 
 import re
@@ -123,24 +143,19 @@ def check_notes(quote, notes_text_normalised):
     return False, "not found anywhere in the supplied notes file"
 
 
-def main():
-    if len(sys.argv) not in (3, 4):
-        print("Usage: python check.py <sources-file.txt> <transcript-file.txt> [notes-file.txt]")
-        sys.exit(2)
-
-    sources_path = Path(sys.argv[1])
-    transcript_path = Path(sys.argv[2])
-    notes_path = Path(sys.argv[3]) if len(sys.argv) == 4 else None
+def run_check(sources_path, transcript_path, notes_path=None):
+    """Runs the full check and returns (exit_code, failures, total_checked,
+    total_blocks). Prints its findings as it goes, same as always."""
 
     if not sources_path.exists():
         print(f"Sources file not found: {sources_path}")
-        sys.exit(2)
+        return 2, None, None, None
     if not transcript_path.exists():
         print(f"Transcript file not found: {transcript_path}")
-        sys.exit(2)
+        return 2, None, None, None
     if notes_path is not None and not notes_path.exists():
         print(f"Notes file not found: {notes_path}")
-        sys.exit(2)
+        return 2, None, None, None
 
     sources_text = sources_path.read_text(encoding="utf-8")
     transcript_lines = transcript_path.read_text(encoding="utf-8").splitlines()
@@ -154,12 +169,12 @@ def main():
 
     if not blocks:
         print(f"No IDEA/CLAIM/SOURCE blocks found in {sources_path}")
-        sys.exit(2)
+        return 2, None, None, None
 
     total_sources = 0
     total_notes = 0
     failures = 0
-    for b, block_match in enumerate(blocks, start=1):
+    for block_match in blocks:
         idea = block_match.group("idea").strip()
         claim = block_match.group("claim").strip()
         block_lines = block_match.group("lines")
@@ -205,14 +220,90 @@ def main():
                 print(f"        {detail}")
         print()
 
-    print("---")
     total_checked = total_sources + total_notes
+    print("---")
     if failures:
         print(f"{failures} problem(s) found across {len(blocks)} claim(s), {total_checked} line(s) checked.")
-        sys.exit(1)
+        return 1, failures, total_checked, len(blocks)
 
     print(f"All {len(blocks)} claim(s) verified: {total_checked} line(s) checked, all confirmed.")
-    sys.exit(0)
+    return 0, failures, total_checked, len(blocks)
+
+
+def selftest():
+    """Runs this script against its own two shipped fixtures and reports
+    whether the checker's basic logic holds: a correct sources file must
+    pass in full, and the deliberately broken one must fail on every line.
+    See the module docstring, "What --selftest actually proves," for what
+    a pass here does and doesn't establish."""
+
+    verify_dir = Path(__file__).resolve().parent
+    transcript_path = verify_dir.parent / "sample" / "transcript.txt"
+    notes_path = verify_dir.parent / "sample" / "notes.txt"
+    correct_path = verify_dir / "test-cases" / "correct-sources.txt"
+    broken_path = verify_dir / "test-cases" / "broken-sources.txt"
+
+    print("=" * 60)
+    print("SELFTEST 1 of 2: correct-sources.txt must pass in full")
+    print("=" * 60)
+    code1, failures1, checked1, blocks1 = run_check(correct_path, transcript_path, notes_path)
+    test1_ok = code1 == 0 and failures1 == 0
+
+    print()
+    print("=" * 60)
+    print("SELFTEST 2 of 2: broken-sources.txt must fail on every line")
+    print("=" * 60)
+    code2, failures2, checked2, blocks2 = run_check(broken_path, transcript_path, None)
+    # Every single SOURCE line in this fixture is deliberately wrong, so a
+    # correct checker fails all of them, not just some.
+    test2_ok = code2 == 1 and failures2 is not None and checked2 is not None and failures2 == checked2
+
+    print()
+    print("=" * 60)
+    print("SELFTEST RESULT")
+    print("=" * 60)
+    if test1_ok:
+        print(f"PASS  correct-sources.txt: {checked1} line(s) across {blocks1} claim(s), 0 failures, as expected")
+    else:
+        print(f"FAIL  correct-sources.txt should have passed cleanly but did not "
+              f"({failures1} failure(s) found)")
+
+    if test2_ok:
+        print(f"PASS  broken-sources.txt: {failures2} of {checked2} line(s) failed, "
+              f"all of them, as expected")
+    else:
+        found = failures2 if failures2 is not None else "an error occurred"
+        total = checked2 if checked2 is not None else "?"
+        print(f"FAIL  broken-sources.txt should have failed every line but only "
+              f"{found} of {total} failed")
+
+    if test1_ok and test2_ok:
+        print()
+        print("Selftest passed: this checker correctly passes real grounding "
+              "and correctly rejects fabricated or altered quotes.")
+        return 0
+
+    print()
+    print("Selftest FAILED: this checker's logic does not behave as documented. "
+          "Do not trust its verdicts on real output until this is fixed.")
+    return 1
+
+
+def main():
+    if len(sys.argv) == 2 and sys.argv[1] == "--selftest":
+        sys.exit(selftest())
+
+    if len(sys.argv) not in (3, 4):
+        print("Usage: python check.py <sources-file.txt> <transcript-file.txt> [notes-file.txt]")
+        print("       python check.py --selftest")
+        sys.exit(2)
+
+    sources_path = Path(sys.argv[1])
+    transcript_path = Path(sys.argv[2])
+    notes_path = Path(sys.argv[3]) if len(sys.argv) == 4 else None
+
+    exit_code, _, _, _ = run_check(sources_path, transcript_path, notes_path)
+    sys.exit(exit_code)
 
 
 if __name__ == "__main__":

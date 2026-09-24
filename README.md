@@ -57,13 +57,13 @@ A group or webinar transcript often names more than one person, or a business it
 
 ## What you get back
 
-**The ideas menu**: three to five lead magnet ideas, each with the same six parts in this order every time: Title, Format, Core Problem, Microsolution, Why This Converts, Pitch Line. No citations, no source notes, nothing that looks like a working document. Every idea has to be both grounded in the transcript and genuinely engaging, correct but flat doesn't meet the bar.
+**The ideas menu**: three to five lead magnet ideas, each with the same seven parts in this order every time: Title, Format, Core Problem, Microsolution, Why This Converts, Pitch Line, and Source (the exact quote and line the idea is built on, so you can check it without opening the second file). If your own call notes shaped an idea too, you'll see a short line saying so underneath. Every idea has to be both grounded in the transcript and genuinely engaging, correct but flat doesn't meet the bar.
 
 If the transcript is thin and can only genuinely support one or two strong ideas, that's what you'll get. A short, real menu beats a full one padded with a weak idea.
 
 **A separate sources file**, named `sources-[date].txt`. This is what proves the ideas menu isn't just taking the AI's word for it. For every idea, it shows the exact words from the transcript, and from your notes if you gave any, that idea is based on. You never need to open this file to use the menu; it's there for anyone who wants to check.
 
-The full contract this output follows, the exact six parts per idea, and how the sources file is formatted, is written down in [reference/output-schema.md](reference/output-schema.md), so you can check it against any output without needing to ask.
+The full contract this output follows, the exact seven parts per idea, and how the sources file is formatted, is written down in [reference/output-schema.md](reference/output-schema.md), so you can check it against any output without needing to ask.
 
 ## How to check an idea yourself
 

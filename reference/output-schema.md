@@ -6,7 +6,7 @@ This is the fixed contract every output must follow. Every run produces two thin
 
 Between three and five ideas. Fewer is fine if the transcript can't genuinely support more; padding with a weak idea is not.
 
-Each idea has the same six parts, in this order:
+Each idea has the same seven parts, in this order:
 
 1. **Title**: the name of the lead magnet, specific and punchy.
 2. **Format**: what it is (checklist, mini-guide, quiz, template, swipe file, short video script, worksheet, etc.).
@@ -14,14 +14,15 @@ Each idea has the same six parts, in this order:
 4. **Microsolution**: the one small, complete win the lead magnet delivers.
 5. **Why This Converts**: the grounded business reasoning, tied to what actually happened in the session.
 6. **Pitch Line**: one sentence with real energy a business owner could use to introduce it.
+7. **Source**: one or two headline transcript quotes with line references, in the fixed format `"[exact quoted fragment]" (line [N])`, joined by ` · ` if two. If a call note also shaped this idea, one short line follows: `Also shaped by your own notes.` (no quote, attribution only, since a reader outside the room can't verify a private note the way they can a transcript line).
 
-No markdown symbols visible beyond simple labelling. No em dashes. No citations or source lines mixed in. This is the document a business owner reads to pick an idea.
+Titles and the seven part-labels are bolded, and a divider separates each idea from the next. No em dashes. No `NOTES:` quotes anywhere in the menu, since only a transcript quote is independently checkable by a reader who doesn't have the notes. This is the document a reader picks an idea from, or checks one against, without needing the companion file.
 
 **Both a fidelity bar and a spark bar apply.** An idea that's grounded but flat (generic title, boring angle) fails the spark bar even though it passes fidelity. An idea that's exciting but not traceable to the transcript fails fidelity even though it might read well. Both are required for every idea in the menu.
 
 ## The sources file
 
-Named `sources-[YYYY-MM-DD].txt`, delivered alongside the menu, never merged into it. One or more blocks per idea, one block per distinct claim:
+Named `sources-[YYYY-MM-DD].txt`, delivered alongside the menu, never merged into it. This is where an idea's *full* grounding lives, every claim and quote, not just the one or two headline quotes already shown in the menu's own Source part. One or more blocks per idea, one block per distinct claim:
 
 ```
 IDEA: [the idea's Title, exactly as it appears in the menu]
@@ -56,4 +57,40 @@ If you'd rather not do this by hand for every idea, `verify/` has an optional sc
 
 ## What the spark check looks like, since it isn't mechanically checkable
 
-Unlike the grounding (which a script can verify), whether an idea is genuinely fun and engaging is a judgement call. The tool makes that call as part of its own self-check (see `rules.md` section 6), and a human reader should make the same call before using an idea: would a business owner actually want to build this, and would a lead actually want to opt in for it. A grounded idea that reads flat isn't a finished output; it's a signal to sharpen the title and pitch line, or look for a stronger moment elsewhere in the transcript.
+Unlike the grounding (which a script can verify), whether an idea is genuinely fun and engaging is a judgement call. The tool makes that call as part of its own self-check (see `rules.md` section 7), and a human reader should make the same call before using an idea: would a business owner actually want to build this, and would a lead actually want to opt in for it. A grounded idea that reads flat isn't a finished output; it's a signal to sharpen the title and pitch line, or look for a stronger moment elsewhere in the transcript.
+
+## What one finished idea actually looks like
+
+The seven parts above, rendered exactly the way they appear in a real menu, one idea in full:
+
+```
+**IDEA 1**
+
+**Title:** The "Say It Out Loud" Pricing Script
+
+**Format:** A one-page printable script, three short scenarios
+
+**Core Problem:** People rehearse their pricing structure endlessly but
+never rehearse the actual sentence that comes out of their mouth. Two
+attendees flat out asked for exact words to say, not another strategy
+session.
+
+**Microsolution:** Three ready-to-say scripts for the moment someone asks
+"what's the investment," so the reader has words in their mouth before
+they need them.
+
+**Why This Converts:** This is the single clearest, most specific ask in
+the whole session. Two different attendees said almost the same thing
+within a minute of each other.
+
+**Pitch Line:** "You already know your price. This gives you the exact
+words to say it without flinching."
+
+**Source:** "Can we just get the actual words? Like a script? Because I
+freeze every time I have to say the number." (line 24) · "I think I
+freeze. Like I've rehearsed the number in my head but never actually
+said it out loud to a real person, so when it's real I panic and
+undersell it." (line 20)
+```
+
+Bolded title and part-labels, a blank line between parts, the Source line last with its quote(s) and line reference(s) in the exact punctuation shown. See `examples.md` and `sample/expected-output-menu.txt` for a complete three-idea menu with dividers between ideas.

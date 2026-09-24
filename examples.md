@@ -7,9 +7,10 @@ Given the transcript in `sample/transcript.txt` (a fictional business, "Coach A,
 Notice what makes the menu good:
 
 - Each title is specific and has a hook: "The 'Say It Out Loud' Pricing Script," not "A Guide to Pricing Confidence."
-- Each Core Problem points to a real moment in the room (two attendees independently asking for a script, a specific reframe the host offered), not a generic struggle that could belong to any transcript.
+- Each Core Problem points to a real moment in the room (two attendees independently asking for a script, a specific reframe the host offered), not a generic struggle that could belong to any transcript. Counts are exact: "two attendees," never "several" or "many," because the sources file only backs a countable two.
 - Each Pitch Line has energy, written the way an excited business owner would actually talk about the idea, not a dry restatement of the problem.
-- No source lines, no citations, no stray markdown anywhere in it.
+- Bolded titles and part-labels, a divider between ideas, no em dashes, nothing that reads like a spreadsheet.
+- Every idea's Source part carries its headline transcript quote(s), checkable without opening the sources file. Ideas 1 and 3 also carry "Also shaped by your own notes," since a call note genuinely backed each, but the Source part itself still shows only transcript quotes, never a notes quote.
 
 Notice what makes the sources file good:
 
@@ -67,11 +68,29 @@ Title: The Confident Pause Cheat Sheet
 Format: Printable card
 Core Problem: A wavering voice invites negotiation; a steady pause
 after stating a price does more to hold it than any discount could.
-[WRONG: no SOURCE line anywhere for this idea, so even though this one
-happens to be genuinely grounded in the transcript, a reader has no
-way to check that without taking the claim on faith. Every idea needs
-its own traceable block in the sources file, not just the ones that
-feel most obviously invented.]
+Source: (none shown)
+[WRONG, two ways at once: no SOURCE line anywhere for this idea in
+the sources file, so even though this one happens to be genuinely
+grounded in the transcript, a reader has no way to check that
+without taking the claim on faith. And the menu itself has no
+Source part either, when every idea's seventh part is required,
+never optional. Every idea needs both a Source part in the menu and
+a traceable block in the sources file, not just the ones that feel
+most obviously invented.]
+
+Idea 3b
+Title: The Pushback Story Reality Check
+Core Problem: Multiple people in the room were assuming clients
+were mentally negotiating them down before the conversation even
+started.
+Source: "Constantly. I assume every client is doing math in their
+head about how to talk me down." (line 50)
+[WRONG: the sources file backs this claim with exactly one SOURCE
+line, one attendee, one quote. "Multiple people" overstates a count
+the source doesn't support. The Source part's own quote actually
+undercuts the claim sitting right above it, a mismatch a self-check
+should catch immediately. Should read "One attendee assumed," not
+"multiple people."]
 
 Idea 4
 Title: The Accountability Tracker
@@ -88,8 +107,8 @@ menu, no matter how good it sounds in the notes.]
 
 ### What's wrong with it, in one line each
 
-A generic title and problem statement that could apply to any pricing content, not something built from this specific room. A justification section that reasons in the abstract ("universal struggle," "broad audience") instead of pointing to what actually happened. An idea invented outright with no basis anywhere in the transcript (the ten-week program). A grounded idea presented with no source line at all, so it isn't checkable even though it happens to be true. An idea backed only by a note, with no transcript quote anywhere, which doesn't meet the bar even though the note itself is real. A flat pitch line with no energy, failing the spark requirement even where the content is accurate.
+A generic title and problem statement that could apply to any pricing content, not something built from this specific room. A justification section that reasons in the abstract ("universal struggle," "broad audience") instead of pointing to what actually happened. An idea invented outright with no basis anywhere in the transcript (the ten-week program). A grounded idea presented with no Source part in the menu and no matching block in the sources file, so it isn't checkable even though it happens to be true. A claim that overstates its own count ("multiple people" when the source shows one), a menu-level version of the same failure a fabricated quote would be, just quieter. An idea backed only by a note, with no transcript quote anywhere, which doesn't meet the bar even though the note itself is real. A flat pitch line with no energy, failing the spark requirement even where the content is accurate.
 
 ### The fix
 
-Every idea's title, problem, and pitch line stay specific to this transcript, built from an actual moment, not a generic pricing struggle any business could have. Every idea has a matching, exact-quote block waiting in the separate sources file, where the citations belong, not mixed into the menu and not skipped for ideas that "feel" true. If the transcript can't genuinely support an idea, that idea doesn't make the menu, no matter how good it would sound in the abstract. And every idea earns its place on both fronts: grounded, and something a person would actually want to click.
+Every idea's title, problem, and pitch line stay specific to this transcript, built from an actual moment, not a generic pricing struggle any business could have. Every idea has a Source part in the menu with its headline transcript quote(s), plus a matching, exact-quote block in the separate sources file for the full detail, never the reverse (a citation in one place but not the other). Every count, sequence, or degree claimed in the menu matches what the sources actually establish, not a rounder or more impressive-sounding version of it. If the transcript can't genuinely support an idea, that idea doesn't make the menu, no matter how good it would sound in the abstract. And every idea earns its place on all fronts: grounded, checkable, and something a person would actually want to click.
