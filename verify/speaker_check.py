@@ -11,13 +11,21 @@ said each SOURCE quote, how many distinct speakers back a claim, and
 whether a claim's own stated count or host/attendee attribution matches
 that mapping.
 
-This script does NOT, and cannot, check whether a quote actually supports
-the strength or characterization a claim gives it (section 7b step 3: "the
+This script cannot fully check whether a quote actually supports the
+strength or characterization a claim gives it (section 7b step 3: "the
 comparison worked," "the room reacted well", etc.). That is a judgement
 call about meaning, not a structural fact, and stays a required manual
 recheck every time (rules.md section 7b), whether or not this script ran
 and whether or not it passed. A clean run of this script is not a
 substitute for that step.
+
+It does, however, print REVIEW flags nominating a claim for closer
+attention during that manual step: an absolute word ("everyone", "always"),
+a characterization word sitting near a negation or contrast word in its own
+source quote, or an unusually short/isolated source quote. These are cheap,
+purely structural signals, not verdicts -- they narrow what a human looks
+at first during step 3, they never replace doing step 3. A REVIEW flag
+never affects this script's PASS/FAIL exit code.
 
 Usage:
     python speaker_check.py <sources-file.txt> <transcript-file.txt>
@@ -134,6 +142,88 @@ ATTENDEE_ATTRIBUTION_PATTERNS = [
     re.compile(rf"\b(?:an?\s+)?(?:attendee|participant|member)\b.{{0,25}}\b{_ATTR_VERBS}\b", re.IGNORECASE),
     re.compile(rf"\b{_ATTR_VERBS}\b.{{0,25}}\b(?:an?\s+)?(?:attendee|participant|member)\b", re.IGNORECASE),
 ]
+
+# --- Characterization-risk flags -------------------------------------
+# None of these prove a claim overstates its source. They are cheap,
+# purely structural signals that nominate a claim for closer attention
+# during the required manual section 7b step 3 recheck -- they narrow
+# what a human has to look at first, they never replace looking.
+
+ABSOLUTE_WORDS = re.compile(
+    r"\b(?:everyone|everybody|always|never|all of (?:them|the|us)|"
+    r"nobody|no one|entirely|completely|totally|undeniably|obviously|"
+    r"clearly (?:shows|proves|demonstrates)|proves|definitively)\b",
+    re.IGNORECASE,
+)
+
+NEGATION_CONTRAST_WORDS = re.compile(
+    r"\b(?:not|n't|but|however|although|though|except|despite|"
+    r"struggled|failed|didn't|couldn't|wasn't|weren't)\b",
+    re.IGNORECASE,
+)
+
+# Characterization verbs the claim might be resting on: "the comparison
+# worked", "the room reacted well", "everyone agreed". Deliberately a
+# looser net than the attribution verbs above -- this is a nomination for
+# review, not a verdict, so a wider net costs a false positive, not a
+# missed real one.
+CHARACTERIZATION_WORDS = re.compile(
+    r"\b(?:worked|working|works|reacted|reaction|agreed|agreement|"
+    r"resonated|landed|succeeded|success|improved|improvement|"
+    r"loved|hated|excited|impressed|convinced|proved|proof)\b",
+    re.IGNORECASE,
+)
+
+SHORT_QUOTE_WORD_THRESHOLD = 6  # a quote at or under this many words is
+                                 # flagged as possibly too short/isolated
+                                 # to carry a claim's full weight on its
+                                 # own -- a proxy, not a measurement.
+
+
+def flag_characterization_risk(claim_text, source_quotes):
+    """Returns a list of short, human-readable flags (possibly empty).
+    Each flag names WHY a claim was nominated for closer attention during
+    the required section 7b step 3 recheck. This never fails the run
+    (main() does not count these toward the exit code) -- they are
+    nominations, not findings, since none of them can tell whether the
+    transcript actually supports or contradicts the characterization."""
+    flags = []
+
+    if ABSOLUTE_WORDS.search(claim_text):
+        word = ABSOLUTE_WORDS.search(claim_text).group(0)
+        flags.append(
+            f'uses an absolute word ("{word}") -- rules.md section 7 step 5 '
+            f"says count what's countable; confirm the transcript really "
+            f"supports this absolute, not just a strong instance of it"
+        )
+
+    if CHARACTERIZATION_WORDS.search(claim_text):
+        char_word = CHARACTERIZATION_WORDS.search(claim_text).group(0)
+        # Only worth flagging the negation/contrast check when there's a
+        # characterization word for it to be undercutting in the first
+        # place -- otherwise "not" appearing anywhere is much too broad.
+        nearby_negation = any(
+            NEGATION_CONTRAST_WORDS.search(q) for q in source_quotes
+        )
+        if nearby_negation:
+            flags.append(
+                f'characterizes the quote as "{char_word}", but a negation or '
+                f'contrast word (e.g. "not", "but", "however") appears in one '
+                f"of its own SOURCE quotes -- check the transcript doesn't "
+                f"actually hedge or contradict this characterization nearby"
+            )
+
+    if source_quotes:
+        shortest = min(source_quotes, key=lambda q: len(q.split()))
+        if len(shortest.split()) <= SHORT_QUOTE_WORD_THRESHOLD:
+            flags.append(
+                f'shortest SOURCE quote is only {len(shortest.split())} word(s) '
+                f'("{shortest.strip()}") -- a short, isolated fragment can be '
+                f"real and still not carry the full weight of the claim built "
+                f"on it; read it in context, not just on its own"
+            )
+
+    return flags
 
 
 def normalise(text):
@@ -376,6 +466,7 @@ def run_check(sources_path, transcript_path):
 
     problems = 0
     checked_claims = 0
+    total_risk_flags = 0
 
     for block_match in blocks:
         idea = block_match.group("idea").strip()
@@ -427,9 +518,24 @@ def run_check(sources_path, transcript_path):
                     print(f"  MISMATCH  claim attributes this to an attendee, but speaker(s) "
                           f"found were {distinct_speakers}")
 
+        source_quote_texts = [s.group("quote") for s in source_lines]
+        risk_flags = flag_characterization_risk(claim, source_quote_texts)
+        for flag in risk_flags:
+            total_risk_flags += 1
+            print(f"  REVIEW    {flag}")
+
         print()
 
     print("---")
+    if total_risk_flags:
+        print(f"{total_risk_flags} claim(s) flagged for closer attention during the required")
+        print("section 7b step 3 recheck (absolute wording, a characterization word sitting")
+        print("near a negation/contrast word in its own source, or an unusually short source")
+        print("quote). A flag here is a NOMINATION for review, not a verdict -- none of these")
+        print("checks can tell whether the transcript actually supports the characterization.")
+        print("It does not affect this script's PASS/FAIL result below.")
+        print()
+
     if problems:
         print(f"{problems} issue(s) found across {checked_claims} claim(s) checked.")
         print("This covers only the mechanical part of rules.md section 7b (mapping,")
@@ -469,6 +575,7 @@ def selftest():
     vtt_sources_path = verify_dir / "test-cases" / "vtt-format-sources.txt"
     fathom_transcript_path = verify_dir / "test-cases" / "fathom-format-transcript.txt"
     fathom_sources_path = verify_dir / "test-cases" / "fathom-format-sources.txt"
+    risk_sources_path = verify_dir / "test-cases" / "characterization-risk-sources.txt"
 
     results = []
 
@@ -514,12 +621,29 @@ def selftest():
 
     print()
     print("=" * 60)
-    print("SELFTEST 6 of 6: fathom-format fixtures must pass clean, using a")
+    print("SELFTEST 6 of 7: fathom-format fixtures must pass clean, using a")
     print("fourth supported label shape (Fathom export: 'MM:SS - LABEL',")
     print("timestamp first, on its own line)")
     print("=" * 60)
     code6 = run_check(fathom_sources_path, fathom_transcript_path)
     results.append(("fathom-format-sources.txt (expect PASS)", code6 == 0))
+
+    print()
+    print("=" * 60)
+    print("SELFTEST 7 of 7: characterization-risk-sources.txt must still PASS")
+    print("(risk flags never affect exit code) but must print exactly 3 REVIEW")
+    print("flags -- absolute wording, a negated characterization, a short quote")
+    print("=" * 60)
+    import io
+    import contextlib
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code7 = run_check(risk_sources_path, transcript_path)
+    captured = buf.getvalue()
+    print(captured)
+    review_count = captured.count("REVIEW    ")
+    results.append(("characterization-risk-sources.txt (expect PASS, exit 0)", code7 == 0))
+    results.append((f"characterization-risk-sources.txt (expect 3 REVIEW flags, got {review_count})", review_count == 3))
 
     print()
     print("=" * 60)
