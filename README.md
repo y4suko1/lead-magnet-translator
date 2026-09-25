@@ -37,6 +37,8 @@ A group or webinar transcript often names more than one person, or a business it
    > Before responding to anything in this Project, read `identity.md` and `rules.md` in the connected knowledge and follow them exactly. Use `examples.md` to see what a good ideas menu looks like, and what to avoid. Follow `rules.md` section 1 on file formats, section 2 on checking for real names and business details, and section 3 on optional call notes, before writing anything.
    >
    > Before delivering any menu, if code execution and network access to github.com are available in this session, follow `rules.md` section 7a: clone `github.com/y4suko1/lead-magnet-translator` fresh into this session and verify the companion `sources-[date].txt` file against it with `verify/check.py`. Never reconstruct `check.py` from memory or from project knowledge; if the repository can't be cloned, there is no checker to run this session. If code execution isn't available, or the clone fails, follow section 7a's instructions for what to do next rather than silently skipping or substituting for the check.
+   >
+   > Before delivering any menu, also follow section 7b of `rules.md`: the independent interpretive recheck. It runs every time, whether or not section 7a's checker ran. `check.py` only confirms a quote is real; it says nothing about whether that quote actually supports the count, attribution, or characterisation the menu gives it, which is what 7b checks. If code execution and the cloned repository are available, run `verify/speaker_check.py` to do the mechanical half of this. Either way, finish the full manual recheck in section 7b before showing the reader anything.
 
 **Turn a transcript into a menu of lead magnet ideas, every time:**
 
@@ -61,6 +63,8 @@ Open the sources file, find the quoted line, check it's really in the transcript
 **If the sources file's header line already says the checker ran** (section 7a: this needs code execution and network access in the chat session, so it won't happen every time), that's already been done for you this session, real and compute-verified, not assumed.
 
 **To run it yourself afterward, or if the header says it didn't run:** an optional script does this mechanically. If you're in a chat session with code execution available, you can just ask "verify this" or "run the checker" and it'll do it there. Otherwise, run it on your own computer from the command line (`python verify/check.py <sources-file> <transcript-file> [notes-file]`) or by dragging the files onto `verify/check.bat`. Full instructions either way: [verify/README.md](verify/README.md). It confirms quotes are real, not whether an idea is any good.
+
+`check.py` confirms a quote is real. It says nothing about whether that quote actually supports the count, attribution, or characterisation a claim gives it, which is what section 7b's recheck is for. `verify/speaker_check.py` does the mechanical half of that: same commands as above, swapping in `speaker_check.py` for `check.py`. The rest of section 7b (does the quote's meaning really back the claim) is a manual read, not something either script can do for you.
 
 ## Try it on the example
 
