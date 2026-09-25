@@ -22,10 +22,13 @@ substitute for that step.
 It does, however, print REVIEW flags nominating a claim for closer
 attention during that manual step: an absolute word ("everyone", "always"),
 a characterization word sitting near a negation or contrast word in its own
-source quote, or an unusually short/isolated source quote. These are cheap,
-purely structural signals, not verdicts -- they narrow what a human looks
-at first during step 3, they never replace doing step 3. A REVIEW flag
-never affects this script's PASS/FAIL exit code.
+source quote, an unusually short/isolated source quote, or a claim whose
+SOURCE line numbers sit far outside every other claim filed under the same
+IDEA (a cheap signal a claim may have been filed under the wrong idea --
+see flag_idea_outliers). These are cheap, purely structural signals, not
+verdicts -- they narrow what a human looks at first during step 3, they
+never replace doing step 3. A REVIEW flag never affects this script's
+PASS/FAIL exit code.
 
 Usage:
     python speaker_check.py <sources-file.txt> <transcript-file.txt>
@@ -178,6 +181,21 @@ SHORT_QUOTE_WORD_THRESHOLD = 6  # a quote at or under this many words is
                                  # flagged as possibly too short/isolated
                                  # to carry a claim's full weight on its
                                  # own -- a proxy, not a measurement.
+
+# An idea's claims are almost always grounded in one contiguous stretch of
+# the conversation -- the moment that idea came up. A claim whose SOURCE
+# line numbers sit far outside the range every OTHER claim under the same
+# IDEA uses is a cheap, purely structural signal that it may have been
+# filed under the wrong idea (e.g. a claim moved to a different IDEA
+# heading than the one its quote actually supports), the class of error
+# neither this script's speaker/count checks nor check.py's quote-exists
+# check can see: both operate one claim at a time and never compare a
+# claim's placement against its own idea's other claims. Like the other
+# risk flags, this is a nomination for the manual recheck, not a verdict --
+# a genuinely later callback to an earlier idea is real and legitimate.
+IDEA_OUTLIER_LINE_GAP = 200  # a claim's nearest SOURCE line is flagged if
+                              # it falls this many lines outside the range
+                              # spanned by its own idea's other claims.
 
 
 def flag_characterization_risk(claim_text, source_quotes):
@@ -415,6 +433,51 @@ def extract_claim_count(claim_text):
     return None
 
 
+def extract_source_line_numbers(block_lines):
+    """Returns a list of ints: every line number named in this block's
+    SOURCE references (e.g. "around line 1245" -> 1245). Lines with no
+    number at all are skipped -- nothing to compare for those."""
+    numbers = []
+    for s in SOURCE_LINE.finditer(block_lines):
+        ref = s.group("ref").strip()
+        m = LINE_NUMBER.search(ref)
+        if m:
+            numbers.append(int(m.group(1)))
+    return numbers
+
+
+def flag_idea_outliers(idea_line_numbers):
+    """idea_line_numbers: {idea_name: [(block_index, [line_numbers]), ...]}.
+    Returns {block_index: flag_string} for any block whose own line numbers
+    fall entirely outside IDEA_OUTLIER_LINE_GAP of every OTHER block's line
+    numbers under the same idea. An idea with only one block, or a block
+    with no line numbers at all, is never flagged -- there's nothing to
+    compare it against."""
+    flags = {}
+    for idea, blocks in idea_line_numbers.items():
+        if len(blocks) < 2:
+            continue
+        for i, (block_idx, my_lines) in enumerate(blocks):
+            if not my_lines:
+                continue
+            other_lines = [
+                n for j, (_, lines) in enumerate(blocks) if j != i for n in lines
+            ]
+            if not other_lines:
+                continue
+            closest_gap = min(
+                abs(mine - other) for mine in my_lines for other in other_lines
+            )
+            if closest_gap > IDEA_OUTLIER_LINE_GAP:
+                flags[block_idx] = (
+                    f'this claim\'s SOURCE line(s) ({min(my_lines)}-{max(my_lines)}) sit '
+                    f'{closest_gap} lines from every other claim filed under the same '
+                    f'IDEA ("{idea}") -- worth confirming this claim is actually about '
+                    f"that idea, not a different one filed here by mistake"
+                )
+    return flags
+
+
 def extract_claim_attribution(claim_text):
     """Returns 'host', 'attendee', or None -- only when the claim actually
     attributes a reported statement to one ("the host explained...", "an
@@ -464,11 +527,22 @@ def run_check(sources_path, transcript_path):
         print(f"No IDEA/CLAIM/SOURCE blocks found in {sources_path}")
         return 2
 
+    # First pass: gather each block's own SOURCE line numbers, grouped by
+    # idea, so flag_idea_outliers can compare a block against its idea's
+    # other blocks before any output is printed.
+    idea_line_numbers = {}
+    for block_idx, block_match in enumerate(blocks):
+        idea = block_match.group("idea").strip()
+        block_lines = block_match.group("lines")
+        line_numbers = extract_source_line_numbers(block_lines)
+        idea_line_numbers.setdefault(idea, []).append((block_idx, line_numbers))
+    outlier_flags = flag_idea_outliers(idea_line_numbers)
+
     problems = 0
     checked_claims = 0
     total_risk_flags = 0
 
-    for block_match in blocks:
+    for block_idx, block_match in enumerate(blocks):
         idea = block_match.group("idea").strip()
         claim = block_match.group("claim").strip()
         block_lines = block_match.group("lines")
@@ -524,6 +598,10 @@ def run_check(sources_path, transcript_path):
             total_risk_flags += 1
             print(f"  REVIEW    {flag}")
 
+        if block_idx in outlier_flags:
+            total_risk_flags += 1
+            print(f"  REVIEW    {outlier_flags[block_idx]}")
+
         print()
 
     print("---")
@@ -576,6 +654,8 @@ def selftest():
     fathom_transcript_path = verify_dir / "test-cases" / "fathom-format-transcript.txt"
     fathom_sources_path = verify_dir / "test-cases" / "fathom-format-sources.txt"
     risk_sources_path = verify_dir / "test-cases" / "characterization-risk-sources.txt"
+    outlier_transcript_path = verify_dir / "test-cases" / "idea-outlier-transcript.txt"
+    outlier_sources_path = verify_dir / "test-cases" / "idea-outlier-sources.txt"
 
     results = []
 
@@ -644,6 +724,23 @@ def selftest():
     review_count = captured.count("REVIEW    ")
     results.append(("characterization-risk-sources.txt (expect PASS, exit 0)", code7 == 0))
     results.append((f"characterization-risk-sources.txt (expect 3 REVIEW flags, got {review_count})", review_count == 3))
+
+    print()
+    print("=" * 60)
+    print("SELFTEST 8 of 8: idea-outlier-sources.txt -- two genuine quotes,")
+    print("both real, but filed under the same IDEA despite sitting 225 lines")
+    print("apart -- must still PASS (every quote is real, no count/attribution")
+    print("mismatch) but print exactly 2 REVIEW flags nominating both claims")
+    print("as possibly filed under the wrong idea")
+    print("=" * 60)
+    buf2 = io.StringIO()
+    with contextlib.redirect_stdout(buf2):
+        code8 = run_check(outlier_sources_path, outlier_transcript_path)
+    captured2 = buf2.getvalue()
+    print(captured2)
+    outlier_flag_count = captured2.count("filed under the same IDEA")
+    results.append(("idea-outlier-sources.txt (expect PASS, exit 0)", code8 == 0))
+    results.append((f"idea-outlier-sources.txt (expect 2 outlier REVIEW flags, got {outlier_flag_count})", outlier_flag_count == 2))
 
     print()
     print("=" * 60)
