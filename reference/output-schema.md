@@ -24,7 +24,7 @@ Titles and the seven part-labels are bolded, and a divider separates each idea f
 
 Named `sources-[YYYY-MM-DD].txt`, delivered alongside the menu, never merged into it. This is where an idea's *full* grounding lives, every claim and quote, not just the one or two headline quotes already shown in the menu's own Source part.
 
-The file opens with one header line stating honestly whether the checker actually ran this session: either that it wasn't run (the normal case in a chat with no code execution), or the real result if it genuinely did run before delivery. See `rules.md` sections 6 and 7a for exactly what this line says in each case. A real result, stated as what it is, never assumed or invented.
+The file opens with two header lines. The first states honestly whether `check.py` actually ran this session: either that it wasn't run (the normal case in a chat with no code execution), or the real result if it genuinely did run before delivery. The second states whether the independent recheck in section 7b ran and whether it made any corrections; this line is always present, since section 7b runs every time, unlike section 7a's checker. See `rules.md` section 6 for exactly what each line says in every case. A real result, stated as what it is, never assumed or invented.
 
 After the header, one or more blocks per idea, one block per distinct claim:
 
