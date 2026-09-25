@@ -12,7 +12,7 @@ whether a claim's own stated count or host/attendee attribution matches
 that mapping.
 
 This script cannot fully check whether a quote actually supports the
-strength or characterization a claim gives it (section 7b step 3: "the
+strength or characterisation a claim gives it (section 7b step 3: "the
 comparison worked," "the room reacted well", etc.). That is a judgement
 call about meaning, not a structural fact, and stays a required manual
 recheck every time (rules.md section 7b), whether or not this script ran
@@ -21,7 +21,7 @@ substitute for that step.
 
 It does, however, print REVIEW flags nominating a claim for closer
 attention during that manual step: an absolute word ("everyone", "always"),
-a characterization word sitting near a negation or contrast word in its own
+a characterisation word sitting near a negation or contrast word in its own
 source quote, an unusually short/isolated source quote, or a claim whose
 SOURCE line numbers sit far outside every other claim filed under the same
 IDEA (a cheap signal a claim may have been filed under the wrong idea --
@@ -146,7 +146,7 @@ ATTENDEE_ATTRIBUTION_PATTERNS = [
     re.compile(rf"\b{_ATTR_VERBS}\b.{{0,25}}\b(?:an?\s+)?(?:attendee|participant|member)\b", re.IGNORECASE),
 ]
 
-# --- Characterization-risk flags -------------------------------------
+# --- Characterisation-risk flags -------------------------------------
 # None of these prove a claim overstates its source. They are cheap,
 # purely structural signals that nominate a claim for closer attention
 # during the required manual section 7b step 3 recheck -- they narrow
@@ -165,7 +165,7 @@ NEGATION_CONTRAST_WORDS = re.compile(
     re.IGNORECASE,
 )
 
-# Characterization verbs the claim might be resting on: "the comparison
+# Characterisation verbs the claim might be resting on: "the comparison
 # worked", "the room reacted well", "everyone agreed". Deliberately a
 # looser net than the attribution verbs above -- this is a nomination for
 # review, not a verdict, so a wider net costs a false positive, not a
@@ -204,7 +204,7 @@ def flag_characterization_risk(claim_text, source_quotes):
     the required section 7b step 3 recheck. This never fails the run
     (main() does not count these toward the exit code) -- they are
     nominations, not findings, since none of them can tell whether the
-    transcript actually supports or contradicts the characterization."""
+    transcript actually supports or contradicts the characterisation."""
     flags = []
 
     if ABSOLUTE_WORDS.search(claim_text):
@@ -218,17 +218,17 @@ def flag_characterization_risk(claim_text, source_quotes):
     if CHARACTERIZATION_WORDS.search(claim_text):
         char_word = CHARACTERIZATION_WORDS.search(claim_text).group(0)
         # Only worth flagging the negation/contrast check when there's a
-        # characterization word for it to be undercutting in the first
+        # characterisation word for it to be undercutting in the first
         # place -- otherwise "not" appearing anywhere is much too broad.
         nearby_negation = any(
             NEGATION_CONTRAST_WORDS.search(q) for q in source_quotes
         )
         if nearby_negation:
             flags.append(
-                f'characterizes the quote as "{char_word}", but a negation or '
+                f'characterises the quote as "{char_word}", but a negation or '
                 f'contrast word (e.g. "not", "but", "however") appears in one '
                 f"of its own SOURCE quotes -- check the transcript doesn't "
-                f"actually hedge or contradict this characterization nearby"
+                f"actually hedge or contradict this characterisation nearby"
             )
 
     if source_quotes:
@@ -607,24 +607,24 @@ def run_check(sources_path, transcript_path):
     print("---")
     if total_risk_flags:
         print(f"{total_risk_flags} claim(s) flagged for closer attention during the required")
-        print("section 7b step 3 recheck (absolute wording, a characterization word sitting")
+        print("section 7b step 3 recheck (absolute wording, a characterisation word sitting")
         print("near a negation/contrast word in its own source, or an unusually short source")
         print("quote). A flag here is a NOMINATION for review, not a verdict -- none of these")
-        print("checks can tell whether the transcript actually supports the characterization.")
+        print("checks can tell whether the transcript actually supports the characterisation.")
         print("It does not affect this script's PASS/FAIL result below.")
         print()
 
     if problems:
         print(f"{problems} issue(s) found across {checked_claims} claim(s) checked.")
         print("This covers only the mechanical part of rules.md section 7b (mapping,")
-        print("counts, attribution). Characterization claims (\"the comparison worked\",")
+        print("counts, attribution). Characterisation claims (\"the comparison worked\",")
         print("\"the room reacted well\") are NOT checked here and still need the manual")
         print("recheck in section 7b step 3, every time, regardless of this result.")
         return 1
 
     print(f"No count or attribution mismatches found across {checked_claims} claim(s).")
     print("This covers only the mechanical part of rules.md section 7b (mapping,")
-    print("counts, attribution). Characterization claims still need the manual")
+    print("counts, attribution). Characterisation claims still need the manual")
     print("recheck in section 7b step 3 -- this is not a substitute for it.")
     return 0
 
@@ -712,7 +712,7 @@ def selftest():
     print("=" * 60)
     print("SELFTEST 7 of 7: characterization-risk-sources.txt must still PASS")
     print("(risk flags never affect exit code) but must print exactly 3 REVIEW")
-    print("flags -- absolute wording, a negated characterization, a short quote")
+    print("flags -- absolute wording, a negated characterisation, a short quote")
     print("=" * 60)
     import io
     import contextlib

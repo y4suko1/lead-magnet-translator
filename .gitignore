@@ -8,3 +8,7 @@ _delivery/
 # Python bytecode cache, generated locally when the scripts in verify/ run
 __pycache__/
 *.pyc
+
+# Pre-edit backups kept locally per workspace backup rule -- not part of the
+# public repo
+_archive/
