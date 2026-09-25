@@ -52,7 +52,9 @@ The notes file is optional, and only needed if the sources file has `NOTES:` lin
 python speaker_check.py <sources-file> <transcript-file>
 ```
 
-It maps every quote to the transcript speaker whose turn it falls in, counts distinct speakers behind each claim, and flags a claim whose stated count or host/attendee attribution doesn't match. It's new, added 2026-09-25, and there's no drag-and-drop `.bat` for it yet, command line only.
+It maps every quote to the transcript speaker whose turn it falls in, counts distinct speakers behind each claim, and flags a claim whose stated count or host/attendee attribution doesn't match. It's new, added 2026-09-25.
+
+It recognises two transcript label shapes: `SPEAKER: dialogue` on one line, and the auto-transcript shape some tools (Otter.ai and similar) produce, a speaker label and timestamp alone on their own line with no colon (`JM  05:12`), dialogue starting the line after. **If a transcript uses neither shape, it says so plainly and stops rather than guessing at turn boundaries** — this happened on the first real transcript it was run against, and it correctly refused rather than risk a wrong mapping; the person doing the check fell back to doing that part by hand, exactly as intended.
 
 **It cannot check everything section 7b covers.** Whether a quote actually supports the strength or characterization a claim gives it ("the comparison worked," "the room reacted well") is a judgement call about meaning, not a structural fact, and this script doesn't attempt it. A clean run here is not a substitute for the full section 7b recheck, every time, it's a second, independent cross-check on the part that genuinely is mechanical.
 

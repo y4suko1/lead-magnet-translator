@@ -4,3 +4,7 @@ HANDOFF-*.md
 # Delivery record (brief + spec) -- internal build history, not part of the
 # product itself; kept in operations/product-delivery/ as the working copy
 _delivery/
+
+# Python bytecode cache, generated locally when the scripts in verify/ run
+__pycache__/
+*.pyc

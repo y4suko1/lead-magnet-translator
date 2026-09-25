@@ -87,6 +87,16 @@ SPEAKER_LABEL = re.compile(
     r"^((?:[A-Z][A-Za-z'.]*\s*){1,4}\d{0,2}):\s+(\S.*)$"
 )
 
+# A second, common transcript shape (Otter.ai and similar auto-transcripts):
+# the speaker label sits alone on its own line, followed by a timestamp,
+# with NO colon at all -- e.g. "YO  26:04" or "Speaker 3  36:23". The
+# dialogue itself starts on the line(s) after. Initials or a short name
+# (which can itself include a trailing number, e.g. "Speaker 3"), two-plus
+# spaces, then a timestamp (M:SS, MM:SS, or H:MM:SS).
+SPEAKER_LABEL_TIMESTAMP = re.compile(
+    r"^([A-Za-z][A-Za-z0-9' .]{0,30}?)\s{2,}(\d{1,2}:\d{2}(?::\d{2})?)\s*$"
+)
+
 # Header/metadata lines that happen to match the label pattern but aren't
 # a speaker turn. Checked case-insensitively against the label text.
 NON_SPEAKER_LABELS = {
@@ -123,25 +133,56 @@ def normalise(text):
 def parse_turns(transcript_lines):
     """Returns a list of (start_line_idx, end_line_idx, label, text) turns,
     0-indexed line positions inclusive. A turn runs from its label line to
-    the line before the next label line (or end of file)."""
+    the line before the next label line (or end of file).
+
+    Tries two label shapes on each line, in order:
+      1. "LABEL: dialogue text" on one line (SPEAKER_LABEL).
+      2. "LABEL  MM:SS" alone on its own line, no colon, dialogue starting
+         on the line(s) after (SPEAKER_LABEL_TIMESTAMP) -- the shape Otter.
+         ai and similar auto-transcripts produce.
+    A transcript is assumed to use ONE shape consistently throughout, so
+    once either shape has matched at least once, only that shape is tried
+    for the rest of the file; this avoids a stray line coincidentally
+    matching the other pattern and splitting a turn in the wrong place."""
     turns = []
     current = None
+    shape_locked = None  # None, "inline", or "timestamp"
+
     for i, line in enumerate(transcript_lines):
-        m = SPEAKER_LABEL.match(line.strip())
-        if m and m.group(1).strip().lower() in NON_SPEAKER_LABELS:
-            m = None  # header/metadata line, not a real speaker turn
-        if m:
+        stripped = line.strip()
+        label = None
+        dialogue_on_same_line = None
+        matched_shape = None
+
+        if shape_locked in (None, "inline"):
+            m = SPEAKER_LABEL.match(stripped)
+            if m and m.group(1).strip().lower() not in NON_SPEAKER_LABELS:
+                label = m.group(1).strip()
+                dialogue_on_same_line = m.group(2)
+                matched_shape = "inline"
+
+        if label is None and shape_locked in (None, "timestamp"):
+            m = SPEAKER_LABEL_TIMESTAMP.match(stripped)
+            if m and m.group(1).strip().lower() not in NON_SPEAKER_LABELS:
+                label = m.group(1).strip()
+                dialogue_on_same_line = None  # dialogue starts next line
+                matched_shape = "timestamp"
+
+        if label is not None:
+            if shape_locked is None:
+                shape_locked = matched_shape
             if current is not None:
                 current["end"] = i - 1
                 turns.append(current)
             current = {
                 "start": i,
                 "end": None,
-                "label": m.group(1).strip(),
-                "text_lines": [m.group(2)] if m.group(2) else [],
+                "label": label,
+                "text_lines": [dialogue_on_same_line] if dialogue_on_same_line else [],
             }
         elif current is not None:
             current["text_lines"].append(line)
+
     if current is not None:
         current["end"] = len(transcript_lines) - 1
         turns.append(current)
@@ -379,42 +420,56 @@ def run_check(sources_path, transcript_path):
 
 
 def selftest():
-    """Runs this script against three shipped fixtures: a known-good
+    """Runs this script against four shipped fixtures: a known-good
     sources file (must pass clean), the shared broken-sources.txt fixture
-    (every quote invented/altered, must fail), and a dedicated fixture with
+    (every quote invented/altered, must fail), a dedicated fixture with
     real quotes but a wrong claimed count and a wrong host/attendee
     attribution (must fail on exactly those two grounds, the class of
-    error check.py cannot see at all)."""
+    error check.py cannot see at all), and a fixture in the OTHER
+    supported label shape (Otter.ai-style "LABEL  MM:SS" on its own line,
+    no colon, dialogue on the next line) to prove both shapes work, not
+    just the one the original fixtures happen to use."""
 
     verify_dir = Path(__file__).resolve().parent
     transcript_path = verify_dir.parent / "sample" / "transcript.txt"
     correct_path = verify_dir / "test-cases" / "correct-sources.txt"
     broken_path = verify_dir / "test-cases" / "broken-sources.txt"
     mismatch_path = verify_dir / "test-cases" / "speaker-mismatch-sources.txt"
+    timestamp_transcript_path = verify_dir / "test-cases" / "timestamp-format-transcript.txt"
+    timestamp_sources_path = verify_dir / "test-cases" / "timestamp-format-sources.txt"
 
     results = []
 
     print("=" * 60)
-    print("SELFTEST 1 of 3: correct-sources.txt must pass clean")
+    print("SELFTEST 1 of 4: correct-sources.txt must pass clean")
     print("=" * 60)
     code1 = run_check(correct_path, transcript_path)
     results.append(("correct-sources.txt (expect PASS)", code1 == 0))
 
     print()
     print("=" * 60)
-    print("SELFTEST 2 of 3: broken-sources.txt must fail (quotes unresolved)")
+    print("SELFTEST 2 of 4: broken-sources.txt must fail (quotes unresolved)")
     print("=" * 60)
     code2 = run_check(broken_path, transcript_path)
     results.append(("broken-sources.txt (expect FAIL)", code2 == 1))
 
     print()
     print("=" * 60)
-    print("SELFTEST 3 of 3: speaker-mismatch-sources.txt must fail on a real")
+    print("SELFTEST 3 of 4: speaker-mismatch-sources.txt must fail on a real")
     print("count mismatch and a real attribution mismatch, with every quote")
     print("itself genuine (this is the class check.py alone cannot catch)")
     print("=" * 60)
     code3 = run_check(mismatch_path, transcript_path)
     results.append(("speaker-mismatch-sources.txt (expect FAIL)", code3 == 1))
+
+    print()
+    print("=" * 60)
+    print("SELFTEST 4 of 4: timestamp-format fixtures must pass clean, using")
+    print("the OTHER supported label shape (no colon, label+timestamp on")
+    print("its own line, dialogue starting the line after)")
+    print("=" * 60)
+    code4 = run_check(timestamp_sources_path, timestamp_transcript_path)
+    results.append(("timestamp-format-sources.txt (expect PASS)", code4 == 0))
 
     print()
     print("=" * 60)

@@ -1,0 +1,34 @@
+Synthetic Transcript (timestamp-label format)
+Auto-transcript style, no colons after speaker labels, matching an
+Otter.ai-style export. Fictional session, fictional speakers, made up
+for testing speaker_check.py's second label shape. Not a real session.
+
+JM  05:12
+So one thing I keep hearing is people don't know where to start with
+their newsletter. Does anyone here relate to that?
+
+PR  05:20
+Completely. I've got eight drafts sitting in a folder and I've never
+sent a single one.
+
+JM  05:34
+Right, and that's so common, the perfectionism trap. What normally
+stops you from hitting send?
+
+PR  05:41
+Honestly I think it's that I keep trying to make it sound like
+everyone else's newsletter instead of just writing like I talk.
+
+JM  05:58
+That's exactly the shift. Write it the way you'd explain it to a
+friend over coffee, not the way you think a newsletter is supposed
+to sound.
+
+Speaker 4  06:15
+Can I add something? I had the same problem, but what fixed it for
+me was just setting a timer, fifteen minutes, and whatever's done at
+the end gets sent.
+
+JM  06:24
+I love that. A timer forces you out of editing mode and into
+shipping mode.
