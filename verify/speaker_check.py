@@ -99,6 +99,14 @@ SPEAKER_LABEL_TIMESTAMP = re.compile(
     r"^([A-Za-z][A-Za-z0-9' .]{0,30}?)\s{2,}(\d{1,2}:\d{2}(?::\d{2})?)\s*$"
 )
 
+# A third, common transcript shape (Fathom and similar auto-transcripts):
+# the timestamp comes FIRST, then a dash, then the label, alone on its own
+# line -- e.g. "0:04 - DH" or "12:37 - Dana Price". Dialogue starts on the
+# line(s) after, often indented.
+SPEAKER_LABEL_TIMESTAMP_FIRST = re.compile(
+    r"^(\d{1,2}:\d{2}(?::\d{2})?)\s*-\s*([A-Za-z][A-Za-z0-9' .]{0,30}?)\s*$"
+)
+
 # Header/metadata lines that happen to match the label pattern but aren't
 # a speaker turn. Checked case-insensitively against the label text.
 NON_SPEAKER_LABELS = {
@@ -137,18 +145,22 @@ def parse_turns(transcript_lines):
     0-indexed line positions inclusive. A turn runs from its label line to
     the line before the next label line (or end of file).
 
-    Tries two label shapes on each line, in order:
-      1. "LABEL: dialogue text" on one line (SPEAKER_LABEL).
+    Tries three label shapes on each line, in order:
+      1. "LABEL: dialogue text" on one line (SPEAKER_LABEL) -- also covers
+         Zoom VTT's "Name (username): text".
       2. "LABEL  MM:SS" alone on its own line, no colon, dialogue starting
-         on the line(s) after (SPEAKER_LABEL_TIMESTAMP) -- the shape Otter.
-         ai and similar auto-transcripts produce.
+         on the line(s) after (SPEAKER_LABEL_TIMESTAMP) -- the shape
+         Otter.ai and similar auto-transcripts produce.
+      3. "MM:SS - LABEL" alone on its own line, timestamp FIRST, dialogue
+         starting the line(s) after (SPEAKER_LABEL_TIMESTAMP_FIRST) -- the
+         shape Fathom and similar auto-transcripts produce.
     A transcript is assumed to use ONE shape consistently throughout, so
-    once either shape has matched at least once, only that shape is tried
+    once any shape has matched at least once, only that shape is tried
     for the rest of the file; this avoids a stray line coincidentally
-    matching the other pattern and splitting a turn in the wrong place."""
+    matching a different pattern and splitting a turn in the wrong place."""
     turns = []
     current = None
-    shape_locked = None  # None, "inline", or "timestamp"
+    shape_locked = None  # None, "inline", "timestamp", or "timestamp_first"
 
     for i, line in enumerate(transcript_lines):
         stripped = line.strip()
@@ -174,6 +186,13 @@ def parse_turns(transcript_lines):
                 label = m.group(1).strip()
                 dialogue_on_same_line = None  # dialogue starts next line
                 matched_shape = "timestamp"
+
+        if label is None and shape_locked in (None, "timestamp_first"):
+            m = SPEAKER_LABEL_TIMESTAMP_FIRST.match(stripped)
+            if m and m.group(2).strip().lower() not in NON_SPEAKER_LABELS:
+                label = m.group(2).strip()
+                dialogue_on_same_line = None  # dialogue starts next line
+                matched_shape = "timestamp_first"
 
         if label is not None:
             if shape_locked is None:
@@ -427,17 +446,17 @@ def run_check(sources_path, transcript_path):
 
 
 def selftest():
-    """Runs this script against five shipped fixtures: a known-good
+    """Runs this script against six shipped fixtures: a known-good
     sources file (must pass clean), the shared broken-sources.txt fixture
     (every quote invented/altered, must fail), a dedicated fixture with
     real quotes but a wrong claimed count and a wrong host/attendee
     attribution (must fail on exactly those two grounds, the class of
-    error check.py cannot see at all), and two fixtures in the OTHER
+    error check.py cannot see at all), and three fixtures in the OTHER
     supported label shapes: Otter.ai-style "LABEL  MM:SS" on its own line
-    with no colon, and Zoom VTT-style "Name (username): text" with a
-    sequence number and timestamp range on the lines before it -- to
-    prove all three shapes work, not just the one the original fixtures
-    happen to use."""
+    with no colon, Zoom VTT-style "Name (username): text" with a sequence
+    number and timestamp range on the lines before it, and Fathom-style
+    "MM:SS - LABEL" (timestamp first) on its own line -- to prove all four
+    shapes work, not just the one the original fixtures happen to use."""
 
     verify_dir = Path(__file__).resolve().parent
     transcript_path = verify_dir.parent / "sample" / "transcript.txt"
@@ -448,6 +467,8 @@ def selftest():
     timestamp_sources_path = verify_dir / "test-cases" / "timestamp-format-sources.txt"
     vtt_transcript_path = verify_dir / "test-cases" / "vtt-format-transcript.txt"
     vtt_sources_path = verify_dir / "test-cases" / "vtt-format-sources.txt"
+    fathom_transcript_path = verify_dir / "test-cases" / "fathom-format-transcript.txt"
+    fathom_sources_path = verify_dir / "test-cases" / "fathom-format-sources.txt"
 
     results = []
 
@@ -484,12 +505,21 @@ def selftest():
 
     print()
     print("=" * 60)
-    print("SELFTEST 5 of 5: vtt-format fixtures must pass clean, using a")
+    print("SELFTEST 5 of 6: vtt-format fixtures must pass clean, using a")
     print("third supported label shape (Zoom VTT export: sequence number")
     print("and timestamp range before 'Name (username): text')")
     print("=" * 60)
     code5 = run_check(vtt_sources_path, vtt_transcript_path)
     results.append(("vtt-format-sources.txt (expect PASS)", code5 == 0))
+
+    print()
+    print("=" * 60)
+    print("SELFTEST 6 of 6: fathom-format fixtures must pass clean, using a")
+    print("fourth supported label shape (Fathom export: 'MM:SS - LABEL',")
+    print("timestamp first, on its own line)")
+    print("=" * 60)
+    code6 = run_check(fathom_sources_path, fathom_transcript_path)
+    results.append(("fathom-format-sources.txt (expect PASS)", code6 == 0))
 
     print()
     print("=" * 60)

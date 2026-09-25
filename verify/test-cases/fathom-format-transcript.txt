@@ -1,0 +1,32 @@
+Synthetic Transcript (Fathom export format)
+Timestamp-first, dash, then label, alone on its own line, dialogue
+indented on the line(s) after, exactly as Fathom's own export produces.
+Fictional session, fictional speakers, made up for testing
+speaker_check.py's fourth label shape. Not a real session.
+
+0:04 - DP
+  So let's talk about the newsletter problem a lot of you mentioned.
+
+0:11 - RP
+  I've got eight drafts sitting in a folder and I've never sent a
+  single one.
+
+0:19 - DP
+  That's so common, the perfectionism trap. What normally stops
+  you from hitting send?
+
+0:26 - RP
+  Honestly I think it's that I keep trying to make it sound like
+  everyone else's newsletter instead of just writing like I talk.
+
+0:38 - DP
+  Write it the way you'd explain it to a friend over coffee, not
+  the way you think a newsletter is supposed to sound.
+
+0:52 - TO
+  Can I add something? What fixed it for me was just setting a
+  timer, fifteen minutes, and whatever's done at the end gets sent.
+
+1:05 - DP
+  I love that. A timer forces you out of editing mode and into
+  shipping mode.
