@@ -79,12 +79,14 @@ LINE_NUMBER = re.compile(r'line\s+(\d+)', re.IGNORECASE)
 
 # A speaker-turn label: start of line, a short run of 1-4 words, each
 # starting with a capital letter (a name, a role, or a numbered role like
-# "Attendee 1"), ending in a colon, followed by actual dialogue on the
-# same line. Anchored to line-start and requires capitalised words so it
-# doesn't match a colon inside a lowercase sentence, or a metadata line
-# like "Session: ..." (also excluded by name below).
+# "Attendee 1"), optionally followed by a parenthetical (e.g. a username,
+# as Zoom's VTT export produces: "Jane Smith (jane-s):"), ending in a
+# colon, followed by actual dialogue on the same line. Anchored to
+# line-start and requires capitalised words so it doesn't match a colon
+# inside a lowercase sentence, or a metadata line like "Session: ..."
+# (also excluded by name below).
 SPEAKER_LABEL = re.compile(
-    r"^((?:[A-Z][A-Za-z'.]*\s*){1,4}\d{0,2}):\s+(\S.*)$"
+    r"^((?:[A-Z][A-Za-z'.]*\s*){1,4}\d{0,2}(?:\s*\([^)]*\))?):\s+(\S.*)$"
 )
 
 # A second, common transcript shape (Otter.ai and similar auto-transcripts):
@@ -157,7 +159,12 @@ def parse_turns(transcript_lines):
         if shape_locked in (None, "inline"):
             m = SPEAKER_LABEL.match(stripped)
             if m and m.group(1).strip().lower() not in NON_SPEAKER_LABELS:
-                label = m.group(1).strip()
+                # Drop a trailing "(username)" parenthetical from the
+                # displayed label (Zoom VTT exports add one), so the same
+                # person's turns group under one clean name rather than a
+                # label cluttered with their username on every line.
+                raw_label = m.group(1).strip()
+                label = re.sub(r'\s*\([^)]*\)\s*$', '', raw_label).strip()
                 dialogue_on_same_line = m.group(2)
                 matched_shape = "inline"
 
@@ -420,15 +427,17 @@ def run_check(sources_path, transcript_path):
 
 
 def selftest():
-    """Runs this script against four shipped fixtures: a known-good
+    """Runs this script against five shipped fixtures: a known-good
     sources file (must pass clean), the shared broken-sources.txt fixture
     (every quote invented/altered, must fail), a dedicated fixture with
     real quotes but a wrong claimed count and a wrong host/attendee
     attribution (must fail on exactly those two grounds, the class of
-    error check.py cannot see at all), and a fixture in the OTHER
-    supported label shape (Otter.ai-style "LABEL  MM:SS" on its own line,
-    no colon, dialogue on the next line) to prove both shapes work, not
-    just the one the original fixtures happen to use."""
+    error check.py cannot see at all), and two fixtures in the OTHER
+    supported label shapes: Otter.ai-style "LABEL  MM:SS" on its own line
+    with no colon, and Zoom VTT-style "Name (username): text" with a
+    sequence number and timestamp range on the lines before it -- to
+    prove all three shapes work, not just the one the original fixtures
+    happen to use."""
 
     verify_dir = Path(__file__).resolve().parent
     transcript_path = verify_dir.parent / "sample" / "transcript.txt"
@@ -437,6 +446,8 @@ def selftest():
     mismatch_path = verify_dir / "test-cases" / "speaker-mismatch-sources.txt"
     timestamp_transcript_path = verify_dir / "test-cases" / "timestamp-format-transcript.txt"
     timestamp_sources_path = verify_dir / "test-cases" / "timestamp-format-sources.txt"
+    vtt_transcript_path = verify_dir / "test-cases" / "vtt-format-transcript.txt"
+    vtt_sources_path = verify_dir / "test-cases" / "vtt-format-sources.txt"
 
     results = []
 
@@ -464,12 +475,21 @@ def selftest():
 
     print()
     print("=" * 60)
-    print("SELFTEST 4 of 4: timestamp-format fixtures must pass clean, using")
-    print("the OTHER supported label shape (no colon, label+timestamp on")
+    print("SELFTEST 4 of 5: timestamp-format fixtures must pass clean, using")
+    print("a second supported label shape (no colon, label+timestamp on")
     print("its own line, dialogue starting the line after)")
     print("=" * 60)
     code4 = run_check(timestamp_sources_path, timestamp_transcript_path)
     results.append(("timestamp-format-sources.txt (expect PASS)", code4 == 0))
+
+    print()
+    print("=" * 60)
+    print("SELFTEST 5 of 5: vtt-format fixtures must pass clean, using a")
+    print("third supported label shape (Zoom VTT export: sequence number")
+    print("and timestamp range before 'Name (username): text')")
+    print("=" * 60)
+    code5 = run_check(vtt_sources_path, vtt_transcript_path)
+    results.append(("vtt-format-sources.txt (expect PASS)", code5 == 0))
 
     print()
     print("=" * 60)

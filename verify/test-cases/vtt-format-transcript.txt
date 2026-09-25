@@ -1,0 +1,35 @@
+WEBVTT
+
+Synthetic Transcript (Zoom VTT export format)
+Sequence numbers and timestamp ranges before each speaker line, exactly
+as Zoom's own .vtt export produces. Fictional session, fictional
+speakers, made up for testing speaker_check.py's third label shape.
+Not a real session.
+
+1
+00:00:12.100 --> 00:00:15.400
+Dana Price (dana-p): So let's talk about the newsletter problem a lot of you mentioned.
+
+2
+00:00:16.020 --> 00:00:19.880
+Riya Patel (riya-p): I've got eight drafts sitting in a folder and I've never sent a single one.
+
+3
+00:00:20.500 --> 00:00:24.200
+Dana Price (dana-p): That's so common, the perfectionism trap. What normally stops you from hitting send?
+
+4
+00:00:25.010 --> 00:00:29.750
+Riya Patel (riya-p): Honestly I think it's that I keep trying to make it sound like everyone else's newsletter instead of just writing like I talk.
+
+5
+00:00:30.300 --> 00:00:35.600
+Dana Price (dana-p): Write it the way you'd explain it to a friend over coffee, not the way you think a newsletter is supposed to sound.
+
+6
+00:00:36.100 --> 00:00:41.900
+Tom Osei (tom-o): Can I add something? What fixed it for me was just setting a timer, fifteen minutes, and whatever's done at the end gets sent.
+
+7
+00:00:42.400 --> 00:00:45.100
+Dana Price (dana-p): I love that. A timer forces you out of editing mode and into shipping mode.
