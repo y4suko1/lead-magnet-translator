@@ -42,6 +42,32 @@ python check.py <sources-file> <transcript-file> [notes-file]
 
 The notes file is optional, and only needed if the sources file has `NOTES:` lines you want checked. Same output either way, same exit code (0 if every line passes, 1 if any fail). Use whichever interface you prefer.
 
+## Checking counts and attribution, not just that quotes are real
+
+`check.py` only proves a quote is real. It says nothing about whether a claim built on that quote got the count right ("two attendees" when only one actually said it) or the attribution right (crediting the host with something an attendee said, or the reverse). That's the mechanical half of what `rules.md` section 7b calls the independent interpretive recheck.
+
+`speaker_check.py` does that mechanical half for you, if you're comfortable with a terminal:
+
+```
+python speaker_check.py <sources-file> <transcript-file>
+```
+
+It maps every quote to the transcript speaker whose turn it falls in, counts distinct speakers behind each claim, and flags a claim whose stated count or host/attendee attribution doesn't match. It's new, added 2026-09-25, and there's no drag-and-drop `.bat` for it yet, command line only.
+
+**It cannot check everything section 7b covers.** Whether a quote actually supports the strength or characterization a claim gives it ("the comparison worked," "the room reacted well") is a judgement call about meaning, not a structural fact, and this script doesn't attempt it. A clean run here is not a substitute for the full section 7b recheck, every time, it's a second, independent cross-check on the part that genuinely is mechanical.
+
+Try it against the shipped fixtures:
+```
+python speaker_check.py test-cases/correct-sources.txt ../sample/transcript.txt
+python speaker_check.py test-cases/speaker-mismatch-sources.txt ../sample/transcript.txt
+```
+The second one has two genuinely real quotes (`check.py` passes both) but a wrong claimed count and a wrong attribution, exactly the class of error `check.py` alone can't see.
+
+It also has its own `--selftest`, same idea as `check.py`'s:
+```
+python speaker_check.py --selftest
+```
+
 ## Checking that the checker itself works
 
 You don't have to take this script's own correctness on faith either. Run:

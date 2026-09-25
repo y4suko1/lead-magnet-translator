@@ -59,7 +59,7 @@ You don't need to take the output's word for it. Open the sources file, find the
 
 Check the sources file's header line first: it states honestly whether `check.py` (section 7a) already ran this session and, if so, the real pass/fail result, and whether the independent interpretive recheck (section 7b, always required) made any corrections. See `rules.md` sections 6, 7a, and 7b.
 
-If you'd rather not do this by hand for every idea, `verify/` has an optional script that does it for you, mechanically, the same check `check.py` runs when 7a applies. See `verify/README.md`. You never need to run it to get a menu from this tool; it's there only if you want to double-check mechanically. It confirms quotes are real; it can't confirm they're characterized, counted, or attributed correctly, that's what section 7b covers instead, and there is no script for that part yet.
+If you'd rather not do this by hand for every idea, `verify/` has two optional scripts. `check.py` confirms quotes are real, the same check it runs when 7a applies. `speaker_check.py` covers the mechanical half of counts and attribution (which speaker said each quote, whether a claim's stated count or host/attendee attribution matches), the part of section 7b that's a structural fact rather than a judgement call. See `verify/README.md`. You never need to run either to get a menu from this tool. Neither one checks whether a quote is characterized fairly, "the comparison worked," "the room reacted well", that's the one part of section 7b that stays a required judgement call, not yet scriptable.
 
 ## What the spark check looks like, since it isn't mechanically checkable
 

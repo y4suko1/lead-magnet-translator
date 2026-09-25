@@ -152,6 +152,8 @@ Before delivering anything, run a second, genuinely separate check, using a diff
 
 This step is required every time, not just when something seems off, and it runs whether or not section 7a's checker was available. If code execution allowed a genuinely separate script for step 1's mapping, use it. If not, do the mapping by hand, as its own distinct pass, not folded into section 7's general re-read.
 
+**If code execution is available, `verify/speaker_check.py` can do the mechanical half of steps 1 and 2 for you**: it maps every `SOURCE:` quote to the transcript speaker whose turn it falls in, counts distinct speakers per claim, and flags a claim whose stated count or host/attendee attribution doesn't match what it found. Run it the same way as `check.py`: `python verify/speaker_check.py sources-[date].txt <transcript-file>`. It cannot do step 3 (characterization) at all, that's a judgement call about meaning, not a structural fact, and it says so in its own output. **A clean run of `speaker_check.py` never replaces steps 1-3 of this section.** It's a second, independent cross-check on the mapping and counts, not a substitute for doing the reading. If it flags a mismatch, treat that as a real finding to fix, the same as a `check.py` failure. If it can't confidently tell host from attendee labels in a given transcript, it says so and skips that part, don't treat silence there as a pass.
+
 ## 8. Output format
 
 Deliver two things every time:
