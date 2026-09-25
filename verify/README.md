@@ -52,6 +52,8 @@ The notes file is optional, and only needed if the sources file has `NOTES:` lin
 python speaker_check.py <sources-file> <transcript-file>
 ```
 
+**Counts get checked on every transcript it can read. Attribution doesn't always.** To check a claim like "the host said X," the script first has to work out which speaker labels are the host and which are attendees, and on some transcripts (an unusual mix of labels, or too few turns to tell confidently) it can't do that reliably. When it can't, it says so plainly, checks counts as normal, and marks every attribution claim it would otherwise have checked as `UNCHECKED` instead of guessing. An `UNCHECKED` claim isn't wrong, it's just not mechanically confirmed; verify it by hand against the transcript the same way you would if this script didn't exist.
+
 It maps every quote to the transcript speaker whose turn it falls in, counts distinct speakers behind each claim, and flags a claim whose stated count or host/attendee attribution doesn't match. It's new, added 2026-09-25.
 
 It recognises four transcript label shapes:
