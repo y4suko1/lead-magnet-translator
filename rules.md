@@ -78,7 +78,7 @@ Deliver this companion file alongside the menu, named `sources-[YYYY-MM-DD].txt`
 - **If this session has no code execution**, the normal case in a Claude Project chat: `Checker not run this session (no code execution available). Every quote above was written to match the transcript as closely as this chat could manage, but wasn't mechanically re-checked. Run verify/check.py yourself, or see verify/README.md, to confirm.` Never claim `check.py` ran, or state a pass/fail result, when it didn't actually run in this session. This chat cannot execute code and never runs the checker itself unless section 7a applies.
 - **If section 7a below applies and the checker genuinely ran this session**: state the real result it printed (the MATRIX line and pass/fail), not a paraphrase. A real, compute-verified result, never assumed or invented.
 
-Add a second line stating whether section 7b's independent recheck ran, and whether it changed anything: `Independent recheck (section 7b) run: [N] correction(s) made` or `Independent recheck (section 7b) run: no corrections needed`. This line is always present, since section 7b is always required, unlike 7a.
+Add a second line stating whether section 7b's independent recheck ran, and whether it changed anything: `Independent recheck (section 7b) run: [N] correction(s) made` or `Independent recheck (section 7b) run: no corrections needed`. This line is always present, since section 7b runs every time, unlike 7a. Use this exact line, with only `[N]` filled in; add detail about what section 7b found, if any is worth recording, as its own separate line underneath, never folded into this one. A reader or script checking this file expects this exact fixed line, in this exact place.
 
 Then, for every idea, list one block:
 

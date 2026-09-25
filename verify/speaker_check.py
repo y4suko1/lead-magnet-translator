@@ -136,7 +136,7 @@ VAGUE_COUNT_WORDS = {"some", "several", "many", "a few", "multiple"}
 # itself to that person. Only phrases that plausibly precede or follow a
 # reported statement count (word chosen + said/asked/suggested/named/
 # raised/pointed out/flagged, in either order, within a few words).
-_ATTR_VERBS = r"(?:said|asked|suggested|named|raised|pointed out|flagged|noted|explained|shared|mentioned)"
+_ATTR_VERBS = r"(?:said|asked|suggested|named|raised|pointed out|flagged|noted|explained|shared|mentioned|confirmed|confirms)"
 HOST_ATTRIBUTION_PATTERNS = [
     re.compile(rf"\b(?:the\s+)?(?:host|coach|facilitator|presenter)\b.{{0,25}}\b{_ATTR_VERBS}\b", re.IGNORECASE),
     re.compile(rf"\b{_ATTR_VERBS}\b.{{0,25}}\b(?:the\s+)?(?:host|coach|facilitator|presenter)\b", re.IGNORECASE),
@@ -541,6 +541,7 @@ def run_check(sources_path, transcript_path):
     problems = 0
     checked_claims = 0
     total_risk_flags = 0
+    unchecked_attribution_claims = 0
 
     for block_idx, block_match in enumerate(blocks):
         idea = block_match.group("idea").strip()
@@ -579,14 +580,19 @@ def run_check(sources_path, transcript_path):
             else:
                 print(f"  count OK  claim's number matches {len(distinct_speakers)} distinct speaker(s)")
 
-        if attribution_confident and speakers_found:
+        if speakers_found:
             claimed_attribution = extract_claim_attribution(claim)
-            if claimed_attribution == "host":
+            if claimed_attribution and not attribution_confident:
+                unchecked_attribution_claims += 1
+                print(f"  UNCHECKED  claim attributes this to the {claimed_attribution}, but "
+                      f"host/attendee labels weren't confident enough on this transcript to "
+                      f"verify it -- confirm this attribution by hand per rules.md section 7b step 2")
+            elif attribution_confident and claimed_attribution == "host":
                 if not all(lbl in host_labels for lbl in distinct_speakers):
                     problems += 1
                     print(f"  MISMATCH  claim attributes this to the host, but speaker(s) "
                           f"found were {distinct_speakers}")
-            elif claimed_attribution == "attendee":
+            elif attribution_confident and claimed_attribution == "attendee":
                 if not all(lbl in attendee_labels for lbl in distinct_speakers):
                     problems += 1
                     print(f"  MISMATCH  claim attributes this to an attendee, but speaker(s) "
@@ -614,6 +620,15 @@ def run_check(sources_path, transcript_path):
         print("It does not affect this script's PASS/FAIL result below.")
         print()
 
+    if unchecked_attribution_claims:
+        print(f"{unchecked_attribution_claims} claim(s) name a host/attendee attribution that")
+        print("could not be mechanically checked, because this transcript's speaker labels")
+        print("didn't give confident host/attendee classification (see the note at the top).")
+        print("These are NOT confirmed correct by this script -- verify them by hand per")
+        print("rules.md section 7b step 2, the same as any other transcript this script")
+        print("can't classify.")
+        print()
+
     if problems:
         print(f"{problems} issue(s) found across {checked_claims} claim(s) checked.")
         print("This covers only the mechanical part of rules.md section 7b (mapping,")
@@ -622,7 +637,12 @@ def run_check(sources_path, transcript_path):
         print("recheck in section 7b step 3, every time, regardless of this result.")
         return 1
 
-    print(f"No count or attribution mismatches found across {checked_claims} claim(s).")
+    if unchecked_attribution_claims:
+        print(f"No count mismatches found across {checked_claims} claim(s). Attribution")
+        print(f"was mechanically checked for {checked_claims - unchecked_attribution_claims} "
+              f"of them; the rest need the hand check named above.")
+    else:
+        print(f"No count or attribution mismatches found across {checked_claims} claim(s).")
     print("This covers only the mechanical part of rules.md section 7b (mapping,")
     print("counts, attribution). Characterisation claims still need the manual")
     print("recheck in section 7b step 3 -- this is not a substitute for it.")
