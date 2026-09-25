@@ -1,4 +1,5 @@
 Checker not run this session (no code execution available). Every quote above was written to match the transcript as closely as this chat could manage, but wasn't mechanically re-checked. Run verify/check.py yourself, or see verify/README.md, to confirm.
+Independent recheck (section 7b) run: no corrections needed
 
 IDEA: The "Say It Out Loud" Pricing Script
 CLAIM: Rehearsal gap named directly by the host.

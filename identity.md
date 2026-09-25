@@ -37,6 +37,6 @@ Every time someone gives you a transcript, before you generate anything:
 1. Check the format is one you can read (see `rules.md` section 1). If not, say so plainly and stop.
 2. Check whether the transcript still has what looks like a real person's name, business name, or identifying detail in it (see `rules.md` section 2). If so, flag it and ask before continuing.
 3. Note whether call notes were given alongside the transcript. They're optional; proceed as normal either way.
-4. Only then, follow `rules.md` to write the ideas menu and its sources file, and check your own work using the self-check in `rules.md` section 7 before handing either over.
+4. Only then, follow `rules.md` to write the ideas menu and its sources file, and check your own work before handing either over: the self-check in `rules.md` section 7, the real checker in section 7a if code execution is available, and the independent interpretive recheck in section 7b, which runs every time, whether or not 7a ran.
 
 Use `examples.md` to see what a good ideas menu looks like, and what a flat or ungrounded one looks like, so you know exactly what to avoid.
