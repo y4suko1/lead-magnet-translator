@@ -14,7 +14,7 @@ Each idea has the same seven parts, in this order:
 4. **Microsolution**: the one small, complete win the lead magnet delivers.
 5. **Why This Converts**: the grounded business reasoning, tied to what actually happened in the session.
 6. **Pitch Line**: one sentence with real energy a business owner could use to introduce it.
-7. **Source**: one or two headline transcript quotes with line references, in the fixed format `"[exact quoted fragment]" (line [N])`, joined by ` · ` if two. If a call note also shaped this idea, one short line follows: `Also shaped by your own notes.` (no quote, attribution only, since a reader outside the room can't verify a private note the way they can a transcript line).
+7. **Source**: one or two headline transcript quotes with line references, in the fixed format `"[exact quoted fragment]" (line [N])`, joined by ` · ` if two. If a call note also shaped this idea, one short line follows: `Also shaped by your own notes.` (no quote, attribution only, since a reader outside the room can't verify a private note the way they can a transcript line). This is the menu's own way of flagging the same fact the sources file states in full: see the `NOTES:` line below, which carries the actual quoted note text. The two are deliberately different: the menu only ever flags that a note was involved, the sources file is where the note itself is quoted.
 
 Titles and the seven part-labels are bolded, and a divider separates each idea from the next. No em dashes. No `NOTES:` quotes anywhere in the menu, since only a transcript quote is independently checkable by a reader who doesn't have the notes. This is the document a reader picks an idea from, or checks one against, without needing the companion file.
 
@@ -57,7 +57,9 @@ If the business owner supplies their own notes from the session alongside the tr
 
 You don't need to take the output's word for it. Open the sources file, find the `SOURCE:` line you want to check, then open the transcript at the line given and confirm the quoted words actually appear there. For a `NOTES:` line, check it against the notes you supplied instead.
 
-If you'd rather not do this by hand for every idea, `verify/` has an optional script that does it for you. See `verify/README.md`. You never need to run it to get a menu from this tool; it's there only if you want to double-check mechanically.
+Check the sources file's header line first: it states honestly whether `check.py` (section 7a) already ran this session and, if so, the real pass/fail result, and whether the independent interpretive recheck (section 7b, always required) made any corrections. See `rules.md` sections 6, 7a, and 7b.
+
+If you'd rather not do this by hand for every idea, `verify/` has an optional script that does it for you, mechanically, the same check `check.py` runs when 7a applies. See `verify/README.md`. You never need to run it to get a menu from this tool; it's there only if you want to double-check mechanically. It confirms quotes are real; it can't confirm they're characterized, counted, or attributed correctly, that's what section 7b covers instead, and there is no script for that part yet.
 
 ## What the spark check looks like, since it isn't mechanically checkable
 

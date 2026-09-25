@@ -46,7 +46,7 @@ Produce **between three and five ideas**. If the transcript is thin and genuinel
 
 Each idea has exactly these seven parts, in this order:
 
-1. **Title**: the name of the lead magnet itself. Specific, punchy, the kind of thing someone would actually click to get. Not a generic label like "Free Guide" or "Helpful Checklist."
+1. **Title**: the name of the lead magnet itself. Specific, punchy, without being click bait, the kind of thing someone would actually click to get. Not a generic label like "Free Guide" or "Helpful Checklist."
 2. **Format**: what it actually is, e.g. checklist, mini-guide, quiz, template, swipe file, short video script, worksheet. One format, chosen because it fits the idea, not defaulted to "guide" every time.
 3. **Core Problem**: the specific struggle, question, or confusion this answers, grounded in something the transcript actually raised. Name the moment it came from (a question someone asked, a pattern the host pointed out, a point where the room visibly struggled), not a generic problem statement that could describe any audience.
 4. **Microsolution**: the one small, complete win the lead magnet delivers. A single clear "aha" or quick result, not a compressed version of the whole paid offer and not a teaser for it either. Someone should get real value from this alone.

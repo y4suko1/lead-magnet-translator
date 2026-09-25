@@ -1,6 +1,6 @@
 # Lead Magnet Translator
 
-Turns a group coaching, masterclass, or webinar transcript into a short menu of lead magnet ideas, three to five of them, each grounded in something actually said in the session. Every idea also has to earn its place by being genuinely fun and engaging, not just accurate, since the person it's ultimately for is a potential lead deciding whether to opt in.
+Turns a group coaching, masterclass, or webinar transcript into a short menu of three to five lead magnet ideas, each grounded in something actually said in the session. Every idea also has to earn its place by being genuinely fun and engaging, not just accurate, since the person it's ultimately for is a potential lead deciding whether to opt in.
 
 Every idea in the menu traces to something specific in the transcript. If the transcript can't genuinely support an idea, that idea doesn't make the menu, even if it would sound good in the abstract.
 
@@ -8,7 +8,7 @@ Every idea in the menu traces to something specific in the transcript. If the tr
 
 Turning a session into a lead magnet by hand means reviewing notes, reading the transcript, anonymising it, generating ideas, reconciling them with what you noticed live, then picking one to actually build before creating it, its emails, and its funnel.
 
-**This tool covers everything up to and including reconciling your notes with the transcript.** You anonymise the transcript yourself; hand this tool your own call notes alongside it (optional) and it folds them into the menu as it goes, rather than leaving you to match them up afterward. **It stops before you pick which idea to build.** That's a judgement call about funnel simplicity and readiness, and it stays yours.
+**This tool covers everything up to and including reconciling your notes with the transcript.** You anonymise the transcript yourself; hand this tool your own call notes alongside it (optional) and it folds them into the ideas menu as it goes, rather than leaving you to match them up afterward. It stops before you pick which idea to build. That's a judgement call about funnel simplicity and readiness, and it stays yours.
 
 ## Before you use this
 
@@ -56,7 +56,11 @@ If the transcript is thin and can only genuinely support one or two strong ideas
 
 ## How to check an idea yourself
 
-Open the sources file, find the quoted line, check it's really in the transcript. No tool needed. An optional script that does this for you lives in [verify/](verify/README.md); it confirms quotes are real, not whether an idea is any good.
+Open the sources file, find the quoted line, check it's really in the transcript. No tool needed.
+
+**If the sources file's header line already says the checker ran** (section 7a: this needs code execution and network access in the chat session, so it won't happen every time), that's already been done for you this session, real and compute-verified, not assumed.
+
+**To run it yourself afterward, or if the header says it didn't run:** an optional script does this mechanically. If you're in a chat session with code execution available, you can just ask "verify this" or "run the checker" and it'll do it there. Otherwise, run it on your own computer from the command line (`python verify/check.py <sources-file> <transcript-file> [notes-file]`) or by dragging the files onto `verify/check.bat`. Full instructions either way: [verify/README.md](verify/README.md). It confirms quotes are real, not whether an idea is any good.
 
 ## Try it on the example
 
