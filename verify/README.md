@@ -82,6 +82,17 @@ It also has its own `--selftest`, same idea as `check.py`'s:
 python speaker_check.py --selftest
 ```
 
+
+## Checking the menu text itself (`--menu`)
+
+`check.py` on its own only reads the sources file, so a claim in the menu prose (a headcount, a room reaction, a timing) is never checked. Add `--menu` to check it:
+
+```
+python check.py ../sample/expected-output-sources.txt ../sample/transcript.txt ../sample/notes.txt --menu ../sample/expected-output-menu.txt
+```
+
+It fails on reaction and timing words ("visibly", "surprised", "whole room", "within a minute", "everyone" and similar) unless that phrase sits inside a verified quote, and on a count of people ("two attendees", "both attendees") unless a matching CLAIM exists with quotes from that many different speakers. A passing count prints as REVIEW: it proves the speakers exist, not that each one did what the claim says, so read it. `test-cases/broken-menu.txt` shows what it catches.
+
 ## Checking that the checker itself works
 
 You don't have to take this script's own correctness on faith either. Run:

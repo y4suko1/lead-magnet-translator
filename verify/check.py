@@ -16,6 +16,7 @@ is what this script checks.
 
 Usage:
     python check.py <sources-file.txt> <transcript-file.txt> [notes-file.txt]
+    python check.py <sources-file.txt> <transcript-file.txt> [notes-file.txt] --menu <menu-file.txt>
     python check.py --selftest
 
 The notes file is optional, and only needed if the sources file contains any
@@ -34,7 +35,7 @@ section below for what a pass here does and doesn't establish.
 A sources file contains one or more blocks in this form:
 
     IDEA: The "Say It Out Loud" Pricing Script
-    CLAIM: Two attendees asked for exact words, not more strategy.
+    CLAIM: One attendee asked for the exact words as a script.
     SOURCE: "Can we just get the actual words? Like a script?" — around line 24
 
 A block can have more than one SOURCE line if more than one part of the
@@ -70,6 +71,20 @@ For each SOURCE or NOTES line, the script checks:
 On any failure it prints the claim, what was searched for, and where (if
 anywhere) it was actually found, then exits non-zero. It never modifies any
 input file.
+
+--menu also checks the menu prose itself, which the sources check never
+reads (it only reads the sources file). Two mechanical rules, both on menu
+text outside the Source lines:
+  1. Reaction and timing words ("visibly", "surprised", "whole room",
+     "everyone", "within a minute", "nodding", ...) fail unless that exact
+     phrase appears inside a verified SOURCE or NOTES quote.
+  2. A count of people ("two attendees", "both attendees", "three people")
+     fails unless the sources file has a CLAIM with the same wording AND that
+     claim's SOURCE quotes come from at least that many different speakers.
+Limit, stated plainly: this catches invented reactions, timing and counts. It
+cannot tell whether a quote from a second speaker actually does what the claim
+says (two people both quoted does not prove two people both "asked"), so a
+passing count claim is printed for a human to read, not trusted.
 
 What --selftest actually proves: that this script correctly passes a menu
 built the way rules.md describes, and correctly fails one where every single
@@ -239,6 +254,108 @@ def run_check(sources_path, transcript_path, notes_path=None):
     return 0, failures, total_checked, len(blocks)
 
 
+REACTION_PHRASES = [
+    "within a minute", "within minutes", "visibly", "surprised", "whole room",
+    "the room", "everyone", "nodding", "gasped", "laughed", "applause",
+    "at the same time", "almost the same thing",
+]
+
+NUMBER_WORDS = {"two": 2, "both": 2, "three": 3, "four": 4, "five": 5}
+COUNT_PEOPLE = re.compile(
+    r"\b(two|both|three|four|five|several|multiple|many|most|few|all|every)"
+    r"\s+(?:different\s+|of\s+the\s+)?(attendees?|people|participants?|members?|clients?)\b",
+    re.IGNORECASE,
+)
+
+SPEAKER_LABEL = re.compile(r"^([A-Z][A-Z0-9 ]+):")
+
+
+def speaker_of(quote, transcript_lines):
+    """Speaker label of the transcript line holding the start of quote."""
+    q = normalise(quote)[:20]
+    for i in range(len(transcript_lines)):
+        if q in normalise(transcript_lines[i]):
+            for j in range(i, -1, -1):
+                m = SPEAKER_LABEL.match(transcript_lines[j])
+                if m:
+                    return m.group(1)
+            return None
+    return None
+
+
+def menu_prose(menu_text):
+    """Menu text with Source lines (verbatim quotes, already checked) removed."""
+    keep = []
+    for line in menu_text.splitlines():
+        s = line.strip()
+        if s.startswith("**Source:**") or s.lower().startswith("also shaped by"):
+            continue
+        keep.append(line)
+    return "\n".join(keep)
+
+
+def check_menu(menu_path, sources_path, transcript_path):
+    """Returns the number of menu problems found. See the docstring for the
+    two rules and their stated limit."""
+    for path in (menu_path, sources_path, transcript_path):
+        if not path.exists():
+            print(f"File not found: {path}")
+            return 1000
+    sources_text = sources_path.read_text(encoding="utf-8")
+    transcript_lines = transcript_path.read_text(encoding="utf-8").splitlines()
+    prose = menu_prose(menu_path.read_text(encoding="utf-8"))
+    prose_norm = normalise(prose)
+
+    quotes = [m.group(1) for m in re.finditer(r'(?:SOURCE|NOTES):\s*"([^"]+)"', sources_text)]
+    quote_norm = normalise(" ".join(quotes))
+
+    print("MENU CHECK: " + str(menu_path))
+    problems = 0
+
+    for phrase in REACTION_PHRASES:
+        pat = r"\b" + re.escape(phrase) + r"\b"
+        if re.search(pat, prose_norm):
+            if re.search(pat, quote_norm):
+                print(f'  PASS  "{phrase}" appears inside a verified quote')
+            else:
+                problems += 1
+                print(f'  FAIL  menu says "{phrase}" but no verified SOURCE/NOTES quote contains it')
+
+    claims = [(m.group("claim"), m.group("lines")) for m in BLOCK.finditer(sources_text)]
+    seen = set()
+    for m in COUNT_PEOPLE.finditer(prose):
+        phrase = normalise(m.group(0))
+        if phrase in seen:
+            continue
+        seen.add(phrase)
+        match = [c for c in claims if phrase in normalise(c[0])]
+        if not match:
+            problems += 1
+            print(f'  FAIL  menu says "{phrase}" but no CLAIM in the sources file uses that wording')
+            continue
+        needed = NUMBER_WORDS.get(phrase.split()[0], 2)
+        speakers = set()
+        for claim, lines in match:
+            for s in SOURCE_LINE.finditer(lines):
+                sp = speaker_of(s.group("quote"), transcript_lines)
+                if sp:
+                    speakers.add(sp)
+        if len(speakers) >= needed:
+            print(f'  REVIEW "{phrase}": claim has quotes from {len(speakers)} speaker(s) '
+                  f'({", ".join(sorted(speakers))}). Read them: do they all do what the claim says?')
+        else:
+            problems += 1
+            print(f'  FAIL  menu says "{phrase}" but its claim is quoted from only '
+                  f'{len(speakers)} speaker(s) ({", ".join(sorted(speakers)) or "none found"})')
+
+    print("---")
+    if problems:
+        print(f"MENU: {problems} problem(s) found in the menu text.")
+    else:
+        print("MENU: no invented reaction, timing or count words found. REVIEW lines still need a human read.")
+    return problems
+
+
 def selftest():
     """Runs this script against its own two shipped fixtures and reports
     whether the checker's basic logic holds: a correct sources file must
@@ -253,14 +370,14 @@ def selftest():
     broken_path = verify_dir / "test-cases" / "broken-sources.txt"
 
     print("=" * 60)
-    print("SELFTEST 1 of 2: correct-sources.txt must pass in full")
+    print("SELFTEST 1 of 4: correct-sources.txt must pass in full")
     print("=" * 60)
     code1, failures1, checked1, blocks1 = run_check(correct_path, transcript_path, notes_path)
     test1_ok = code1 == 0 and failures1 == 0
 
     print()
     print("=" * 60)
-    print("SELFTEST 2 of 2: broken-sources.txt must fail on every line")
+    print("SELFTEST 2 of 4: broken-sources.txt must fail on every line")
     print("=" * 60)
     code2, failures2, checked2, blocks2 = run_check(broken_path, transcript_path, None)
     # Every single SOURCE line in this fixture is deliberately wrong, so a
@@ -269,8 +386,26 @@ def selftest():
 
     print()
     print("=" * 60)
+    print("SELFTEST 3 of 4: the shipped sample menu must pass the menu check")
+    print("=" * 60)
+    sample_dir = verify_dir.parent / "sample"
+    test3_ok = check_menu(sample_dir / "expected-output-menu.txt",
+                          sample_dir / "expected-output-sources.txt", transcript_path) == 0
+
+    print()
+    print("=" * 60)
+    print("SELFTEST 4 of 4: broken-menu.txt (invented reaction, timing, count) must fail")
+    print("=" * 60)
+    broken_problems = check_menu(verify_dir / "test-cases" / "broken-menu.txt",
+                                 verify_dir / "test-cases" / "broken-menu-sources.txt", transcript_path)
+    test4_ok = broken_problems >= 3  # timing, reaction and room phrases at minimum
+
+    print()
+    print("=" * 60)
     print("SELFTEST RESULT")
     print("=" * 60)
+    print(("PASS" if test3_ok else "FAIL") + "  sample menu passes the menu check")
+    print(("PASS" if test4_ok else "FAIL") + f"  broken-menu.txt: {broken_problems} problem(s) caught")
     if test1_ok:
         print(f"PASS  correct-sources.txt: {checked1} line(s) across {blocks1} claim(s), 0 failures, as expected")
     else:
@@ -286,7 +421,7 @@ def selftest():
         print(f"FAIL  broken-sources.txt should have failed every line but only "
               f"{found} of {total} failed")
 
-    if test1_ok and test2_ok:
+    if test1_ok and test2_ok and test3_ok and test4_ok:
         print()
         print("Selftest passed: this checker correctly passes real grounding "
               "and correctly rejects fabricated or altered quotes.")
@@ -302,8 +437,19 @@ def main():
     if len(sys.argv) == 2 and sys.argv[1] == "--selftest":
         sys.exit(selftest())
 
+    args = sys.argv[1:]
+    menu_path = None
+    if "--menu" in args:
+        i = args.index("--menu")
+        if i + 1 >= len(args):
+            print("--menu needs a menu file path")
+            sys.exit(2)
+        menu_path = Path(args[i + 1])
+        del args[i:i + 2]
+    sys.argv = [sys.argv[0]] + args
+
     if len(sys.argv) not in (3, 4):
-        print("Usage: python check.py <sources-file.txt> <transcript-file.txt> [notes-file.txt]")
+        print("Usage: python check.py <sources-file.txt> <transcript-file.txt> [notes-file.txt] [--menu <menu-file.txt>]")
         print("       python check.py --selftest")
         sys.exit(2)
 
@@ -312,6 +458,10 @@ def main():
     notes_path = Path(sys.argv[3]) if len(sys.argv) == 4 else None
 
     exit_code, _, _, _ = run_check(sources_path, transcript_path, notes_path)
+    if menu_path is not None:
+        print()
+        if check_menu(menu_path, sources_path, transcript_path):
+            exit_code = exit_code or 1
     sys.exit(exit_code)
 
 

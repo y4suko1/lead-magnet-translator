@@ -77,17 +77,16 @@ The seven parts above, rendered exactly the way they appear in a real menu, one 
 **Format:** A one-page printable script, three short scenarios
 
 **Core Problem:** People rehearse their pricing structure endlessly but
-never rehearse the actual sentence that comes out of their mouth. Two
-attendees flat out asked for exact words to say, not another strategy
-session.
+never rehearse the actual sentence that comes out of their mouth. One
+attendee asked outright for the actual words, as a script.
 
 **Microsolution:** Three ready-to-say scripts for the moment someone asks
 "what's the investment," so the reader has words in their mouth before
 they need them.
 
 **Why This Converts:** This is the single clearest, most specific ask in
-the whole session. Two different attendees said almost the same thing
-within a minute of each other.
+the session: one attendee asked for a script, and another described
+freezing at the same moment.
 
 **Pitch Line:** "You already know your price. This gives you the exact
 words to say it without flinching."

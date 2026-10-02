@@ -6,13 +6,10 @@ CLAIM: Rehearsal gap named directly by the host.
 SOURCE: "People spend all this time on their pricing structure, the tiers, the packages, and almost no time rehearsing the actual sentence that comes out of their mouth." — around line 28
 
 IDEA: The "Say It Out Loud" Pricing Script
-CLAIM: One attendee asked for the exact words as a script.
+CLAIM: Two attendees asked for exact words, not more strategy.
 SOURCE: "Can we just get the actual words? Like a script? Because I freeze every time I have to say the number." — around line 24
-NOTES: "kept meaning to write a script for the pricing moment, never got round to it"
-
-IDEA: The "Say It Out Loud" Pricing Script
-CLAIM: Another attendee described freezing when it came to saying the number.
 SOURCE: "I think I freeze. Like I've rehearsed the number in my head but never actually said it out loud to a real person, so when it's real I panic and undersell it." — around line 20
+NOTES: "kept meaning to write a script for the pricing moment, never got round to it"
 
 IDEA: The Confident Pause Cheat Sheet
 CLAIM: Tone, not the number, is what a client actually reacts to.
