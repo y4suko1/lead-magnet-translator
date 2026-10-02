@@ -1,6 +1,6 @@
 # Lead Magnet Translator
 
-Turns a group coaching, masterclass, or webinar transcript into a short menu of three to five lead magnet ideas, each grounded in something actually said in the session. Every idea also has to earn its place by being genuinely fun and engaging, not just accurate, since the person it's ultimately for is a potential lead deciding whether to opt in.
+Turns a group coaching, masterclass, or webinar transcript into a menu of five slots, each a lead magnet idea grounded in something actually said in the session, or a marked gap. Every idea also has to earn its place by being genuinely fun and engaging, not just accurate, since the person it's ultimately for is a potential lead deciding whether to opt in.
 
 Every idea in the menu traces to something specific in the transcript. If the transcript can't genuinely support an idea, that idea doesn't make the menu, even if it would sound good in the abstract.
 
@@ -50,7 +50,7 @@ A group or webinar transcript often names more than one person, or a business it
 
 ## What you get back
 
-**The ideas menu**: three to five lead magnet ideas, each with the same seven parts in this order every time: Title, Format, Core Problem, Microsolution, Why This Converts, Pitch Line, and Source (the exact quote and line the idea is built on, so you can check it without opening the second file). If your own call notes shaped an idea too, you'll see a short line saying so underneath. Every idea has to be both grounded in the transcript and genuinely engaging, correct but flat doesn't meet the bar.
+**The ideas menu**: five slots. Each is a lead magnet idea with the same seven parts in this order every time: Title, Format, Core Problem, Microsolution, Why This Converts, Pitch Line, and Source (the exact quote and line the idea is built on, so you can check it without opening the second file), or a marked gap ("No idea: not enough in source") if the transcript can't support one. A short "Not used" list under the five slots shows moments that did not become an idea, each with its exact quote. If your own call notes shaped an idea too, you'll see a short line saying so underneath. Every idea has to be both grounded in the transcript and genuinely engaging, correct but flat doesn't meet the bar.
 
 If the transcript is thin and can only genuinely support one or two strong ideas, that's what you'll get. A short, real menu beats a full one padded with a weak idea.
 

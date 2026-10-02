@@ -4,9 +4,17 @@ This is the fixed contract every output must follow. Every run produces two thin
 
 ## The ideas menu
 
-Between three and five ideas. Fewer is fine if the transcript can't genuinely support more; padding with a weak idea is not.
+Exactly five slots, numbered IDEA 1 to IDEA 5, ideas first. A slot the transcript can't genuinely support is a marked gap, never padded with a weak idea:
 
-Each idea has the same seven parts, in this order:
+```
+**IDEA 4**
+
+**No idea:** Not enough in source.
+```
+
+After the five slots comes a **NOT USED** list under a divider: up to five moments that did not become an idea, one per line, each a short label and one exact transcript quote with its line, `- [label]: "[exact quoted fragment]" (line [N])`, no reasons. `- None.` if nothing was left out.
+
+Each idea slot has the same seven parts, in this order (a marked gap has none of them):
 
 1. **Title**: the name of the lead magnet, specific and punchy.
 2. **Format**: what it is (checklist, mini-guide, quiz, template, swipe file, short video script, worksheet, etc.).

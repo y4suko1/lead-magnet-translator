@@ -40,9 +40,17 @@ When notes are given, read them before drafting ideas. Use them to shape which i
 - **Every idea still needs at least one transcript `SOURCE:` line.** A note can add weight or sharpen the framing, but can't be the only thing backing an idea.
 - **A note can also be cited directly**, with its own `NOTES:` line in the sources file, see section 5. This makes the business owner's own judgement visible and traceable in the output, not silently folded in as if it came from nowhere.
 
-## 4. The ideas menu: three to five ideas, each with the same seven parts
+## 4. The ideas menu: five slots, each an idea with the same seven parts or a marked gap
 
-Produce **up to five ideas, usually three to five**. If the transcript is thin and genuinely can't support that many distinct, well-grounded ideas, produce fewer rather than pad the menu with something weak or barely connected to the transcript. Quality and grounding always beat hitting a target count.
+Every menu has **exactly five slots**, numbered IDEA 1 to IDEA 5, so a short menu is never a silent one. Fill a slot with an idea only if the transcript genuinely supports it. If it can't, write the slot as a marked gap, never pad it with something weak or barely connected to the transcript:
+
+```
+**IDEA 4**
+
+**No idea:** Not enough in source.
+```
+
+Put the ideas first and the marked gaps last. A marked gap has no sources block and no seven parts. Quality and grounding always beat filling a slot.
 
 Each idea has exactly these seven parts, in this order:
 
@@ -65,7 +73,15 @@ Each idea has exactly these seven parts, in this order:
 
 `verify/check.py --menu` flags the reaction and timing words and the headcounts above. It cannot judge a count's meaning, so section 7b step 2 still applies.
 
-**If nothing in the transcript can genuinely support a sixth part for an idea, don't force it.** Leave that idea out of the menu instead of filling a part with something thin or generic. The seventh part (Source) is never optional. Every idea in the menu needs at least one Source quote from the transcript; an idea with nothing to put there doesn't belong in the menu, even if a note alone could support it.
+**If nothing in the transcript can genuinely support an idea, don't force it, and don't drop the slot.** Write it as a marked gap (see above) instead of filling a part with something thin or generic. For an idea that is in the menu, the seventh part (Source) is never optional: it needs at least one Source quote from the transcript, even if a note alone could support it.
+
+**After the five slots, add a Not used list.** Under a divider and the label `**NOT USED**`, list up to five moments in the transcript that did not become an idea, one per line, each as a short label and one verbatim transcript quote in the fixed Source format:
+
+```
+- [short label]: "[exact quoted fragment]" (line [N])
+```
+
+Give no reason and no judgement, only the label and the quote, so the reader can see what was left out and decide whether it should have been used. A quote here is copied exactly, like any other. If nothing was left out, write `- None.`
 
 ## 5. Make it fun and engaging, not just correct
 
@@ -118,7 +134,7 @@ This file is plain output, not something to design or format for reading. It exi
 
 Before delivering anything, re-read both the menu and the companion file against the transcript (and the notes, if given) one more time, as if you were a skeptical second reader, not the person who just wrote them:
 
-1. **Every idea in the menu has at least one matching block in `sources-[date].txt`, and that block includes at least one `SOURCE:` line.** No exceptions, a `NOTES:` line alone is never enough.
+1. **Every idea in the menu (a marked gap needs none) has at least one matching block in `sources-[date].txt`, and that block includes at least one `SOURCE:` line.** No exceptions, a `NOTES:` line alone is never enough.
 2. **Every quoted fragment in a `SOURCE:` line is copied exactly from the transcript, and every quoted fragment in a `NOTES:` line is copied exactly from the notes**, not paraphrased, not reconstructed from memory of having read it a moment ago. If you're not sure a quote is exact, go back and check it against the source text directly. This includes the headline quote(s) in the menu's own Source part (part 7), not just the sources file.
 3. **Every `CLAIM:` is a short label, not a restatement of the idea's reasoning.** If a claim has turned into a full sentence of argument, trim it back to naming what the quote establishes; the reasoning belongs in the menu.
 4. **Nothing in an idea's Core Problem, Microsolution, or Why This Converts exists that isn't backed by a `SOURCE:` or `NOTES:` line in the companion file.** Read each idea part by part and ask: is this actually what the matching source says, or did something extra creep in that the source doesn't support?
@@ -126,6 +142,8 @@ Before delivering anything, re-read both the menu and the companion file against
 6. **Nothing was softened into a guess.** If step 4 or 5 finds a claim the source doesn't fully support, don't reword it to sound safer without saying so. Remove that idea from the menu instead.
 7. **Run the spark check separately from the fidelity check.** For each idea, ask: would a business owner actually be excited to build this, and would a lead actually want to opt in for it? If the honest answer is no, the idea is grounded but flat, and flat isn't good enough. Sharpen the title and pitch line, or drop the idea and see if a stronger one is sitting elsewhere in the transcript.
 8. **The menu has bolded titles and part-labels, a divider between ideas, no em dashes, and reads like something a person would be excited to hand someone**, not a report. Every idea's Source part (7) has at least one transcript quote, in the fixed format, matching what the sources file itself also shows. If an idea's Source part carries the "Also shaped by your own notes" line, confirm that idea genuinely has a matching `NOTES:` line in the sources file, not just a Source part someone forgot to trim.
+
+9. **The menu has exactly five slots, ideas first and marked gaps after, and a Not used list whose every quote is copied exactly from the transcript.**
 
 If this check finds a problem, fix it before showing the reader anything. Don't deliver a first draft and mention the issue afterward.
 

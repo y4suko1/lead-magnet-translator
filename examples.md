@@ -7,7 +7,7 @@ Given the transcript in `sample/transcript.txt` (a fictional business, "Coach A,
 Notice what makes the menu good:
 
 - Each title is specific and has a hook: "The 'Say It Out Loud' Pricing Script," not "A Guide to Pricing Confidence."
-- Each Core Problem points to a real moment in the room (two attendees independently asking for a script, a specific reframe the host offered), not a generic struggle that could belong to any transcript. Counts are exact: "two attendees," never "several" or "many," because the sources file only backs a countable two.
+- Each Core Problem points to a real moment in the room (one attendee asking for a script, another describing the freeze, a specific reframe the host offered), not a generic struggle that could belong to any transcript. Counts are exact: "two attendees," never "several" or "many," because the sources file only backs a countable two.
 - Each Pitch Line has energy, written the way an excited business owner would actually talk about the idea, not a dry restatement of the problem.
 - Bolded titles and part-labels, a divider between ideas, no em dashes, nothing that reads like a spreadsheet.
 - Every idea's Source part carries its headline transcript quote(s), checkable without opening the sources file. Ideas 1 and 3 also carry "Also shaped by your own notes," since a call note genuinely backed each, but the Source part itself still shows only transcript quotes, never a notes quote.

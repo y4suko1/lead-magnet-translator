@@ -72,9 +72,12 @@ On any failure it prints the claim, what was searched for, and where (if
 anywhere) it was actually found, then exits non-zero. It never modifies any
 input file.
 
---menu also checks the menu prose itself, which the sources check never
-reads (it only reads the sources file). Two mechanical rules, both on menu
-text outside the Source lines:
+--menu also checks the menu itself, which the sources check never reads
+(it only reads the sources file). Mechanical rules:
+  0. The menu has exactly five slots (IDEA 1 to IDEA 5), each either a full
+     idea (has a Title) or a marked gap ("No idea:"), and every quote in the
+     NOT USED list appears in the transcript.
+Two more, on menu text outside the Source and NOT USED lines:
   1. Reaction and timing words ("visibly", "surprised", "whole room",
      "everyone", "within a minute", "nodding", ...) fail unless that exact
      phrase appears inside a verified SOURCE or NOTES quote.
@@ -286,8 +289,14 @@ def speaker_of(quote, transcript_lines):
 def menu_prose(menu_text):
     """Menu text with Source lines (verbatim quotes, already checked) removed."""
     keep = []
+    in_not_used = False
     for line in menu_text.splitlines():
         s = line.strip()
+        if s.startswith("**NOT USED**"):
+            in_not_used = True
+            continue
+        if in_not_used:
+            continue
         if s.startswith("**Source:**") or s.lower().startswith("also shaped by"):
             continue
         keep.append(line)
@@ -311,6 +320,42 @@ def check_menu(menu_path, sources_path, transcript_path):
 
     print("MENU CHECK: " + str(menu_path))
     problems = 0
+
+    menu_text = menu_path.read_text(encoding="utf-8")
+    slots = re.findall(r"^\*\*IDEA (\d+)\*\*\s*$", menu_text, re.MULTILINE)
+    if slots != ["1", "2", "3", "4", "5"]:
+        problems += 1
+        print(f"  FAIL  expected exactly five slots IDEA 1 to IDEA 5 in order, found: {', '.join(slots) or 'none'}")
+    else:
+        print("  PASS  five slots found")
+        parts = re.split(r"^\*\*IDEA \d+\*\*\s*$", menu_text, flags=re.MULTILINE)[1:]
+        seen_gap = False
+        for n, body in enumerate(parts, start=1):
+            has_title = "**Title:**" in body
+            is_gap = "**No idea:**" in body
+            if has_title == is_gap:
+                problems += 1
+                print(f"  FAIL  IDEA {n} is neither a full idea nor a marked gap (or is both)")
+            elif is_gap:
+                seen_gap = True
+            elif seen_gap:
+                problems += 1
+                print(f"  FAIL  IDEA {n} is a full idea placed after a marked gap, ideas go first")
+
+    transcript_norm = normalise(" ".join(transcript_lines))
+    nu = re.search(r"\*\*NOT USED\*\*(.*)", menu_text, re.DOTALL)
+    if nu is None:
+        problems += 1
+        print("  FAIL  no NOT USED list found")
+    else:
+        for item in re.finditer(r'^-\s+(.+?):\s*"([^"]+)"\s*\(line\s+(\d+)\)', nu.group(1), re.MULTILINE):
+            ok, detail = check_source(item.group(2), "line " + item.group(3), transcript_lines, transcript_norm)
+            short = item.group(2)[:50] + ("..." if len(item.group(2)) > 50 else "")
+            if ok:
+                print(f'  PASS  NOT USED "{short}" ({detail})')
+            else:
+                problems += 1
+                print(f'  FAIL  NOT USED "{short}": {detail}')
 
     for phrase in REACTION_PHRASES:
         pat = r"\b" + re.escape(phrase) + r"\b"
@@ -398,7 +443,7 @@ def selftest():
     print("=" * 60)
     broken_problems = check_menu(verify_dir / "test-cases" / "broken-menu.txt",
                                  verify_dir / "test-cases" / "broken-menu-sources.txt", transcript_path)
-    test4_ok = broken_problems >= 3  # timing, reaction and room phrases at minimum
+    test4_ok = broken_problems >= 5  # slots, timing, reaction and room phrases at minimum
 
     print()
     print("=" * 60)
