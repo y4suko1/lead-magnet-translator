@@ -42,19 +42,28 @@ When notes are given, read them before drafting ideas. Use them to shape which i
 
 ## 4. The ideas menu: three to five ideas, each with the same seven parts
 
-Produce **between three and five ideas**. If the transcript is thin and genuinely can't support that many distinct, well-grounded ideas, produce fewer rather than pad the menu with something weak or barely connected to the transcript. Quality and grounding always beat hitting a target count.
+Produce **up to five ideas, usually three to five**. If the transcript is thin and genuinely can't support that many distinct, well-grounded ideas, produce fewer rather than pad the menu with something weak or barely connected to the transcript. Quality and grounding always beat hitting a target count.
 
 Each idea has exactly these seven parts, in this order:
 
 1. **Title**: the name of the lead magnet itself. Specific, punchy, without being click bait, the kind of thing someone would actually click to get. Not a generic label like "Free Guide" or "Helpful Checklist."
 2. **Format**: what it actually is, e.g. checklist, mini-guide, quiz, template, swipe file, short video script, worksheet. One format, chosen because it fits the idea, not defaulted to "guide" every time.
-3. **Core Problem**: the specific struggle, question, or confusion this answers, grounded in something the transcript actually raised. Name the moment it came from (a question someone asked, a pattern the host pointed out, a point where the room visibly struggled), not a generic problem statement that could describe any audience.
+3. **Core Problem**: the specific struggle, question, or confusion this answers, grounded in something the transcript actually raised. Name the moment it came from (a question someone asked, a pattern the host pointed out, or something a speaker said about struggling), not a generic problem statement that could describe any audience.
 4. **Microsolution**: the one small, complete win the lead magnet delivers. A single clear "aha" or quick result, not a compressed version of the whole paid offer and not a teaser for it either. Someone should get real value from this alone.
-5. **Why This Converts**: the grounded business reasoning for why this specific idea, tied to this specific transcript, is likely to turn a reader into a lead. Point to what actually happened in the session (how many people asked about it, how the host reacted, how central the topic was) rather than a generic claim that could apply to any lead magnet.
+5. **Why This Converts**: the grounded business reasoning for why this specific idea, tied to this specific transcript, is likely to turn a reader into a lead. Point to what actually happened in the session, using only what the text shows (how many distinct speakers raised it, what the host said about it, how much of the session it took up) rather than a generic claim that could apply to any lead magnet.
 6. **Pitch Line**: one sentence a business owner could say or write to introduce this lead magnet to their audience. This is the line most explicitly about spark and energy, not just accuracy. See section 5 for what makes it land.
 7. **Source**: one headline quote (or two, if two distinct quotes genuinely anchor the idea), each with its line reference, in the fixed format `"[exact quoted fragment]" (line [N])`, quotes separated by ` · ` if there are two. This is the one place in the menu a reader can check a claim without opening the separate sources file. It carries the idea's clearest, most load-bearing quote(s), not every quote behind it; the full set still lives in the companion sources file (section 6). **This line is transcript quotes only, never a call-notes quote.** A reader outside the room has the transcript to check against, not the business owner's private notes, so a notes quote here wouldn't actually be checkable and doesn't belong in this line. **The quote must be copied in full, exactly as it appears in the transcript, never trimmed mid-sentence to save space.** If a quote is genuinely long, either use the shorter of two candidate quotes instead, or copy it in full and let the line run long; never cut a quote short and present the fragment as if it were the whole thing.
 
 **If a call note also backs this idea** (section 3), add one short line directly under the Source line: `Also shaped by your own notes.` Plain, brief, no quote, no specifics, just a flag that the business owner's own observation played a part. This is attribution, not a citation: it tells the reader notes were involved without asking them to verify something they can't see. Leave this line out entirely for any idea no note touched.
+
+**What you may not state, anywhere in the menu, unless the transcript or notes say it outright:**
+
+- **A count of people.** Count the distinct speakers who actually did the thing, and use that exact number. "Two attendees asked" is only true if two attendees asked. Someone describing a similar feeling is not asking.
+- **A timing or sequence.** A transcript without timestamps gives no "within a minute", "right after", or "back to back". Adjacent lines are not a time gap.
+- **A reaction by the room or the group.** "The room was surprised", "everyone nodded", "people lit up" need a speaker or the call notes to say so. A reaction in the call notes belongs only to the idea that note is about. One speaker's reaction is that speaker's, never the whole room's.
+- **A step, number, or detail added to a quote's idea.** If the quote names two steps, the menu names two steps.
+
+`verify/check.py --menu` flags the reaction and timing words and the headcounts above. It cannot judge a count's meaning, so section 7b step 2 still applies.
 
 **If nothing in the transcript can genuinely support a sixth part for an idea, don't force it.** Leave that idea out of the menu instead of filling a part with something thin or generic. The seventh part (Source) is never optional. Every idea in the menu needs at least one Source quote from the transcript; an idea with nothing to put there doesn't belong in the menu, even if a note alone could support it.
 
@@ -125,8 +134,8 @@ If this check finds a problem, fix it before showing the reader anything. Don't 
 Section 7's self-check is you, the model, re-reading your own work. It's real, but it's not the same as an independent script actually running against the files. If this session has code execution enabled, run the stronger version instead of relying on section 7 alone:
 
 1. Before delivering anything, write `sources-[YYYY-MM-DD].txt`, the transcript, and the notes file (if one was given) to your working directory.
-2. Run `verify/check.py sources-[YYYY-MM-DD].txt <transcript-file> [notes-file]` from the connected `lead-magnet-translator` repository, cloned fresh into this session's working directory (`git clone https://github.com/y4suko1/lead-magnet-translator`).
-3. Fix or remove any idea whose block fails. Re-run until every block passes, or the idea is dropped from the menu.
+2. Run `verify/check.py sources-[YYYY-MM-DD].txt <transcript-file> [notes-file] --menu <menu-file>` from the connected `lead-magnet-translator` repository, cloned fresh into this session's working directory (`git clone https://github.com/y4suko1/lead-magnet-translator`).
+3. Fix or remove any idea whose block fails, and rewrite any menu sentence the `--menu` pass flags so it says only what its quotes say. Re-run until every block passes, or the idea is dropped from the menu.
 4. State the real result in the sources file's header line (see section 6): the exact MATRIX line `check.py` printed, and the pass/fail count, not a paraphrase and not an assumption that it would have passed.
 5. A pass here is not the end of verification. `check.py` only confirms quotes are real; it says nothing about whether they're characterised, counted, or attributed correctly. Move on to section 7b before delivering anything, whether or not this step was available.
 
