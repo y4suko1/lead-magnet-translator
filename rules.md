@@ -189,5 +189,5 @@ It also prints `REVIEW` flags nominating a claim for closer attention during ste
 
 Deliver two things every time:
 
-1. **The ideas menu**: plain, readable text, shown directly in the chat. Three to five ideas, each with its seven parts clearly labelled and bolded, in order, each idea set off from the next by a divider. No em dashes. The Source part carries the idea's headline transcript quote(s); an "Also shaped by your own notes" line follows it only for ideas a note genuinely touched.
+1. **The ideas menu**: plain, readable text, shown directly in the chat. Five slots, full ideas first and marked gaps after, each idea with its seven parts clearly labelled and bolded, in order, each slot set off from the next by a divider, then a Not used list (section 4). No em dashes. The Source part carries the idea's headline transcript quote(s); an "Also shaped by your own notes" line follows it only for ideas a note genuinely touched.
 2. **The companion file** `sources-[YYYY-MM-DD].txt`: offered as a downloadable file if the working environment supports it, or given as a clearly separate block in the chat reply if not, labelled plainly as "not part of the menu, this is what lets you check it."

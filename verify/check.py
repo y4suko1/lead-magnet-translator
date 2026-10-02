@@ -75,8 +75,10 @@ input file.
 --menu also checks the menu itself, which the sources check never reads
 (it only reads the sources file). Mechanical rules:
   0. The menu has exactly five slots (IDEA 1 to IDEA 5), each either a full
-     idea (has a Title) or a marked gap ("No idea:"), and every quote in the
-     NOT USED list appears in the transcript.
+     idea (has a Title) or a marked gap ("No idea:"), every quote in the
+     NOT USED list and in each idea's own Source line appears in the
+     transcript, and the menu's idea titles match the sources file's IDEA
+     headings exactly.
 Two more, on menu text outside the Source and NOT USED lines:
   1. Reaction and timing words ("visibly", "surprised", "whole room",
      "everyone", "within a minute", "nodding", ...) fail unless that exact
@@ -343,6 +345,28 @@ def check_menu(menu_path, sources_path, transcript_path):
                 print(f"  FAIL  IDEA {n} is a full idea placed after a marked gap, ideas go first")
 
     transcript_norm = normalise(" ".join(transcript_lines))
+
+    # The menu's own Source lines: every quote must be in the transcript.
+    for sline in re.finditer(r"^\*\*Source:\*\*\s*(.+)$", menu_text, re.MULTILINE):
+        for q in re.finditer(r'"([^"]+)"\s*\(line\s+(\d+)\)', sline.group(1)):
+            ok, detail = check_source(q.group(1), "line " + q.group(2), transcript_lines, transcript_norm)
+            short = q.group(1)[:50] + ("..." if len(q.group(1)) > 50 else "")
+            if ok:
+                print(f'  PASS  menu Source "{short}" ({detail})')
+            else:
+                problems += 1
+                print(f'  FAIL  menu Source "{short}": {detail}')
+
+    # Menu titles must match the sources file's IDEA headings exactly.
+    menu_titles = [x.strip() for x in re.findall(r"^\*\*Title:\*\*\s*(.+)$", menu_text, re.MULTILINE)]
+    source_ideas = {m.group("idea").strip() for m in BLOCK.finditer(sources_text)}
+    for title in menu_titles:
+        if title not in source_ideas:
+            problems += 1
+            print(f'  FAIL  menu title "{title}" has no matching IDEA heading in the sources file')
+    for idea in sorted(source_ideas - set(menu_titles)):
+        problems += 1
+        print(f'  FAIL  sources IDEA "{idea}" matches no title in the menu')
     nu = re.search(r"\*\*NOT USED\*\*(.*)", menu_text, re.DOTALL)
     if nu is None:
         problems += 1
@@ -415,14 +439,14 @@ def selftest():
     broken_path = verify_dir / "test-cases" / "broken-sources.txt"
 
     print("=" * 60)
-    print("SELFTEST 1 of 4: correct-sources.txt must pass in full")
+    print("SELFTEST 1 of 5: correct-sources.txt must pass in full")
     print("=" * 60)
     code1, failures1, checked1, blocks1 = run_check(correct_path, transcript_path, notes_path)
     test1_ok = code1 == 0 and failures1 == 0
 
     print()
     print("=" * 60)
-    print("SELFTEST 2 of 4: broken-sources.txt must fail on every line")
+    print("SELFTEST 2 of 5: broken-sources.txt must fail on every line")
     print("=" * 60)
     code2, failures2, checked2, blocks2 = run_check(broken_path, transcript_path, None)
     # Every single SOURCE line in this fixture is deliberately wrong, so a
@@ -431,7 +455,7 @@ def selftest():
 
     print()
     print("=" * 60)
-    print("SELFTEST 3 of 4: the shipped sample menu must pass the menu check")
+    print("SELFTEST 3 of 5: the shipped sample menu must pass the menu check")
     print("=" * 60)
     sample_dir = verify_dir.parent / "sample"
     test3_ok = check_menu(sample_dir / "expected-output-menu.txt",
@@ -439,7 +463,7 @@ def selftest():
 
     print()
     print("=" * 60)
-    print("SELFTEST 4 of 4: broken-menu.txt (invented reaction, timing, count) must fail")
+    print("SELFTEST 4 of 5: broken-menu.txt (invented reaction, timing, count) must fail")
     print("=" * 60)
     broken_problems = check_menu(verify_dir / "test-cases" / "broken-menu.txt",
                                  verify_dir / "test-cases" / "broken-menu-sources.txt", transcript_path)
@@ -447,8 +471,25 @@ def selftest():
 
     print()
     print("=" * 60)
+    print("SELFTEST 5 of 5: a changed quote in a menu Source line, and a menu title that")
+    print("differs from the sources file, must both be caught")
+    print("=" * 60)
+    planted = (sample_dir / "expected-output-menu.txt").read_text(encoding="utf-8")
+    planted = planted.replace("it's your tone when you say it", "it's your voice when you say it", 1)
+    planted = planted.replace("The Confident Pause Cheat Sheet", "The Calm Pause Cheat Sheet", 1)
+    planted_path = verify_dir / "test-cases" / "broken-menu-quote-title.txt"
+    planted_path.write_text(planted, encoding="utf-8")
+    try:
+        planted_problems = check_menu(planted_path, sample_dir / "expected-output-sources.txt", transcript_path)
+    finally:
+        planted_path.unlink()
+    test5_ok = planted_problems >= 3  # altered quote, plus the title mismatch seen from both sides
+
+    print()
+    print("=" * 60)
     print("SELFTEST RESULT")
     print("=" * 60)
+    print(("PASS" if test5_ok else "FAIL") + f"  planted quote and title faults: {planted_problems} problem(s) caught")
     print(("PASS" if test3_ok else "FAIL") + "  sample menu passes the menu check")
     print(("PASS" if test4_ok else "FAIL") + f"  broken-menu.txt: {broken_problems} problem(s) caught")
     if test1_ok:
@@ -466,7 +507,7 @@ def selftest():
         print(f"FAIL  broken-sources.txt should have failed every line but only "
               f"{found} of {total} failed")
 
-    if test1_ok and test2_ok and test3_ok and test4_ok:
+    if test1_ok and test2_ok and test3_ok and test4_ok and test5_ok:
         print()
         print("Selftest passed: this checker correctly passes real grounding "
               "and correctly rejects fabricated or altered quotes.")

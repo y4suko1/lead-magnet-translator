@@ -1,0 +1,14 @@
+Synthetic Transcript (a speaker label literally named "Host")
+Otter-style label and timestamp on their own line. Fictional session and
+speakers, made up to test that a label named "Host" is read as a speaker
+turn. Not a real session.
+
+Host  00:05
+Today is about saying your price out loud. Most people rehearse the
+proposal and never the sentence.
+
+Speaker 1  00:40
+I freeze every time someone asks what it costs.
+
+Host  00:52
+That freeze is the whole topic. Practise the sentence, not the slide.

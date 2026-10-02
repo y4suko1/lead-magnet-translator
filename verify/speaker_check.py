@@ -290,7 +290,11 @@ def parse_turns(transcript_lines):
 
         if label is None and shape_locked in (None, "timestamp"):
             m = SPEAKER_LABEL_TIMESTAMP.match(stripped)
-            if m and m.group(1).strip().lower() not in NON_SPEAKER_LABELS:
+            # "host" is excluded for the inline shape only (it catches header
+            # lines like "Host: Coach A"). A label named Host followed by a
+            # timestamp is a real speaker turn, and dropping it silently
+            # credits the host's quotes to the previous attendee.
+            if m and m.group(1).strip().lower() not in (NON_SPEAKER_LABELS - {"host"}):
                 label = m.group(1).strip()
                 dialogue_on_same_line = None  # dialogue starts next line
                 matched_shape = "timestamp"
@@ -727,6 +731,21 @@ def selftest():
     print("=" * 60)
     code6 = run_check(fathom_sources_path, fathom_transcript_path)
     results.append(("fathom-format-sources.txt (expect PASS)", code6 == 0))
+
+    print()
+    print("=" * 60)
+    print("SELFTEST 6b: a speaker label named 'Host' (label + timestamp shape)")
+    print("must be read as a turn, so host quotes are credited to the host")
+    print("=" * 60)
+    import io as _io
+    import contextlib as _contextlib
+    _buf = _io.StringIO()
+    with _contextlib.redirect_stdout(_buf):
+        code6b = run_check(verify_dir / "test-cases" / "host-label-sources.txt",
+                           verify_dir / "test-cases" / "host-label-transcript.txt")
+    print(_buf.getvalue(), end="")
+    results.append(("host-label-sources.txt (expect PASS, host classified as Host)",
+                    code6b == 0 and "Treating ['Host'] as host" in _buf.getvalue()))
 
     print()
     print("=" * 60)
